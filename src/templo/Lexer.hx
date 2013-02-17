@@ -3,67 +3,6 @@ package templo;
 import String in StdString;
 import templo.Ast;
 
-enum TokenDef {
-	// element
-	Comment(v:String);
-	Node(v:String);
-	Macro(v:String);
-	DoubleDot;
-	Data(v:String);
-	EndNode(v:String);
-	CDataBegin;
-	CDataEnd;
-	// node
-	NodeContent(v:Bool);
-	// attrib value
-	Quote(v:Bool);
-	// expr
-	Dot;
-	Int(v:Int);
-	Float(v:String);
-	String(v:String);
-	Ident(v:String);
-	Kwd(v:Keyword);
-	Comma;
-	ParentOpen;
-	ParentClose;
-	BraceOpen;
-	BraceClose;
-	BracketOpen;
-	BracketClose;
-	Op(v:Op);
-	Unop(v:Unop);
-	Question;
-	// eof
-	Eof;
-}
-
-typedef Token = {
-	tok: TokenDef,
-	pos: hxparse.Lexer.Pos
-}
-
-enum Keyword {
-	If;
-	Else;
-	Var;
-	While;
-	Do;
-	For;
-	Break;
-	Continue;
-	Function;
-	Return;
-	This;
-	Try;
-	Catch;
-	Default;
-	Switch;
-	Case;
-	Ignore;
-	Literal;
-}
-
 enum ErrorMsg {
 	InvalidOp(s:String);
 	InvalidEscape;

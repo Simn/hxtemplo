@@ -1,0 +1,20 @@
+-cp src
+-cp test
+-main Test
+-cp ../hxparse/src
+--each
+
+-neko bin/hxtemplo.n
+-D dump=pretty
+
+--next
+-swf bin/hxtemplo.swf
+
+--next
+-js bin/hxtemplo.js
+
+--next
+-cpp bin/cpp
+
+--next
+-php bin/php

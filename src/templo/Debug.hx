@@ -23,4 +23,19 @@ class Debug {
 	static public function printConstruct(c:Construct) {
 		return c.def.getName();
 	}
+	
+	static var timers = new Map<String, Float>();
+	
+	static public function timer(name:String) {
+		var cur = haxe.Timer.stamp();
+		if (!timers.exists(name))
+			timers[name] = 0.0;
+		return function() {
+			timers[name] += (haxe.Timer.stamp() - cur);
+		}
+	}
+	
+	static public function printTimer() {
+		return [for (k in timers.keys()) '$k: ${timers.get(k)}'].join("\n");
+	}
 }

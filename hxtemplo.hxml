@@ -1,4 +1,0 @@
--cp src
--cp ../../com.github/hxparse/src
--neko bin/hxtemplo.n
--main Main
