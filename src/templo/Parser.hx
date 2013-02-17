@@ -24,9 +24,9 @@ class Parser extends hxparse.Parser<Token> {
 	
 	public function parse() {
 		var data = program([]);
-		Sys.print(Debug.printContent(data.fst));
+		//trace(Debug.printContent(data.fst));
 	}
-	
+
 	function program(acc):{fst:Content, snd:TokenDef} {
 		return switch stream {
 			case [{tok:Eof}]: {fst: acc, snd: Eof};
@@ -255,12 +255,12 @@ class Parser extends hxparse.Parser<Token> {
 				}
 		}
 		var content = switch stream {
-			case [{tok:NodeContent(b), pos:p2}]: {content: b, pos: p2};
-			case _: {content:null, pos:p1};
+			case [{tok:NodeContent(b), pos:p2}]: {content: b ? 1 : 0, pos: p2};
+			case _: {content:-1, pos:p1};
 		}
 		var p2 = content.pos;
-		var content =
-			if (content.content == null) {
+		var content = switch(content.content) {
+			case -1:
 				switch(parseNode("macro", p1)) {
 					case {def:XNode(n), pos:p}:
 						if (n.content != null)
@@ -270,16 +270,17 @@ class Parser extends hxparse.Parser<Token> {
 						MAttr(n.attributes);
 					case _: throw "assert";
 				}
-			} else if (!content.content) {
+			case 0:
 				MContent([]);
-			} else {
+			case 1:
 				lexerStream.ruleset = Lexer.element;
 				var content = program([]);
 				switch(content.snd) {
 					case EndNode("macro"): null;
 					case _: error(UnclosedNode("macro"),p1);
 				}
-			}
+			case _: throw "assert";
+		}
 		var m = {
 			mode: data.mode,
 			name: data.name,
