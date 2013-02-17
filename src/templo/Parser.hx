@@ -1,5 +1,4 @@
 package templo;
-import templo.Lexer;
 import templo.Ast;
 
 enum ParserErrorMsg {
@@ -9,7 +8,7 @@ enum ParserErrorMsg {
 }
 
 typedef Error = {
-	msg: ErrorMsg,
+	msg: ParserErrorMsg,
 	pos: hxparse.Lexer.Pos
 }
 
