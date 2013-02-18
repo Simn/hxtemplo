@@ -5,7 +5,6 @@
 --each
 
 -neko bin/hxtemplo.n
--D dump=pretty
 
 --next
 -swf bin/hxtemplo.swf
