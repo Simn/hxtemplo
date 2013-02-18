@@ -2,7 +2,6 @@ package templo;
 import hxparse.Lexer.Pos in Pos;
 
 enum TokenDef {
-	// element
 	Comment(v:String);
 	Node(v:String);
 	Macro(v:String);
@@ -11,11 +10,8 @@ enum TokenDef {
 	EndNode(v:String);
 	CDataBegin;
 	CDataEnd;
-	// node
 	NodeContent(v:Bool);
-	// attrib value
 	Quote(v:Bool);
-	// expr
 	Dot;
 	Int(v:Int);
 	Float(v:String);
@@ -32,7 +28,6 @@ enum TokenDef {
 	Op(v:Op);
 	Unop(v:Unop);
 	Question;
-	// eof
 	Eof;
 }
 
