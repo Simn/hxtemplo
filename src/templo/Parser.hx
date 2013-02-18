@@ -22,8 +22,7 @@ class Parser extends hxparse.Parser<Token> {
 	}
 	
 	public function parse() {
-		var data = program([]);
-		//trace(Debug.printContent(data.content));
+		return program([]).content;
 	}
 
 	function program(acc):{content:Content, tok:TokenDef} {
