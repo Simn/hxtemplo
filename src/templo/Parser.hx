@@ -23,13 +23,13 @@ class Parser extends hxparse.Parser<Token> {
 	
 	public function parse() {
 		var data = program([]);
-		//trace(Debug.printContent(data.fst));
+		//trace(Debug.printContent(data.content));
 	}
 
-	function program(acc):{fst:Content, snd:TokenDef} {
+	function program(acc):{content:Content, tok:TokenDef} {
 		return switch stream {
-			case [{tok:Eof}]: {fst: acc, snd: Eof};
-			case [{tok:EndNode(n)}]: {fst: acc, snd: EndNode(n)};
+			case [{tok:Eof}]: {content: acc, tok: Eof};
+			case [{tok:EndNode(n)}]: {content: acc, tok: EndNode(n)};
 			case [e = parseElement()]:
 				switch(e.def) {
 					case XData(""):
@@ -72,23 +72,23 @@ class Parser extends hxparse.Parser<Token> {
 		lexerStream.ruleset = Lexer.attributes;
 		var c = parseNodeAttribs(n);
 		lexerStream.ruleset = Lexer.element;
-		if (c.fst) {
+		if (c.hasContent) {
 			var content = program([]);
-			switch(content.snd) {
+			switch(content.tok) {
 				case EndNode(name): if (n.node != name) error(Message('Expected </${n.node}>, found </$name>'), p1);
 				case _: error(UnclosedNode(n.node), p1);
 			}
-			n.content = content.fst;
+			n.content = content.content;
 		}
 		return {
 			def: XNode(n),
-			pos: punion(p1, c.snd)
+			pos: punion(p1, c.pos)
 		}
 	}
 	
 	function parseNodeAttribs(node:Node) {
 		return switch stream {
-			case [{tok: NodeContent(c), pos:p}]: {fst: c, snd: p};
+			case [{tok: NodeContent(c), pos:p}]: {hasContent: c, pos: p};
 			case [{tok: DoubleDot}]:
 				lexerStream.ruleset = Lexer.expr;
 				switch stream {
@@ -274,7 +274,7 @@ class Parser extends hxparse.Parser<Token> {
 			case 1:
 				lexerStream.ruleset = Lexer.element;
 				var content = program([]);
-				switch(content.snd) {
+				switch(content.tok) {
 					case EndNode("macro"): null;
 					case _: error(UnclosedNode("macro"),p1);
 				}
