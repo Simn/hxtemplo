@@ -5,11 +5,11 @@ class Test {
 		var testPath = "http://localhost:2000/class.mtt";
 		var http = new haxe.Http(testPath);
 		http.onData = function(data) {
-			var parser = new templo.Parser(new haxe.io.StringInput(data), "class.mtt");
-			var stamp = haxe.Timer.stamp();
-			trace("Starting");
-			parser.parse();
-			trace('Elapsed: ${haxe.Timer.stamp() - stamp}');
+			function run() {
+				var parser = new templo.Parser(new haxe.io.StringInput(data), "class.mtt");
+				parser.parse();
+			}
+			haxe.Timer.measure(run);
 		}
 		http.onError = function(e) {
 			trace(e);
