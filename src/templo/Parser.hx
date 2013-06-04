@@ -118,6 +118,7 @@ class Parser extends hxparse.Parser<Token> {
 					case [{tok:Quote(b)}, v = parseAttribValues(b)]: v;
 				}
 				stream.ruleset = Lexer.attributes;
+				v.reverse();
 				node.attributes.push({
 					name: attr,
 					content: v
