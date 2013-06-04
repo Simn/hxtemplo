@@ -21,7 +21,7 @@ class Converter {
 		for (elt in c) {
 			process(elt);
 		}
-		return PBlock(popBlock().elements);
+		return mkBlock(popBlock().elements);
 	}
 	
 	function error(s:String, p:hxparse.Lexer.Pos) {
@@ -52,6 +52,13 @@ class Converter {
 		}
 	}
 	
+	function mkBlock(el:Array<Part>) {
+		return switch(el) {
+			case [e]: e;
+			case _: PBlock(el);
+		}		
+	}
+	
 	function construct(c:Construct) {
 		switch(c.def) {
 			case CRaw(e):
@@ -78,16 +85,16 @@ class Converter {
 			case CEnd:
 				function unwrap(block:Block, prev:Part) {
 					return switch(block.type) {
-						case BTIf(e): PIf(e, PBlock(block.elements), prev);
-						case BTElse(bt): unwrap(bt, PBlock(block.elements));
-						case BTElseif(bt, e): unwrap(bt, PIf(e, PBlock(block.elements), prev));
+						case BTIf(e): PIf(e, mkBlock(block.elements), prev);
+						case BTElse(bt): unwrap(bt, mkBlock(block.elements));
+						case BTElseif(bt, e): unwrap(bt, PIf(e, mkBlock(block.elements), prev));
 						case _: throw "assert";
 					}
 				}
 				var b = popBlock();
 				switch(b.type) {
 					case BTNormal: error("Unexpected end", c.pos);
-					case BTForeach(s, e): push(PForeach(s, e, PBlock(b.elements)));
+					case BTForeach(s, e): push(PForeach(s, e, mkBlock(b.elements)));
 					case BTIf(_) | BTElseif(_) | BTElse(_): push(unwrap(b, null));
 				}
 			case CSet(s, e1):
