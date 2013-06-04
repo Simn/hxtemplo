@@ -81,7 +81,12 @@ class Template {
 		if (m == null) throw 'Unknown macro: $s';
 		for (i in 0...cl.length) {
 			var arg = m.args[i];
-			ctx.bind(arg.name, cl[i]);
+			switch(cl[i]) {
+				case PValue(e):
+					ctx.bind(arg.name, eval(ctx, e));
+				case t:
+					throw 'Unexpected macro arg: $t';
+			}
 		}
 		processPart(ctx, m.part);
 		ctx.pop();
