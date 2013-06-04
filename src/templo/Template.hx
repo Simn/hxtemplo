@@ -57,26 +57,31 @@ class Template {
 				}
 			case PValue(e) | PRaw(e): ctx.append(display(eval(ctx, e)));
 			case PNode(node):
+				ctx.newline();
 				ctx.append('<${node.node}');
 				for (attr in node.attributes) {
 					ctx.append(' ${attr.name}="');
 					processPart(ctx, attr.t);
 					ctx.append('"');
 				}
-				ctx.append('>');
+				ctx.append(">");
+				ctx.newline();
+				ctx.increaseIndent();
 				if (node.content != null) processPart(ctx, node.content);
+				ctx.decreaseIndent();
+				ctx.newline();
 				ctx.append('</${node.node}>');
+				ctx.newline();
 		}
 	}
 	
 	function callMacro(ctx:Context, s:String, cl:Array<Part>) {
 		ctx.push();
-		var args = cl.map(processPart.bind(ctx));
 		var m = Converter.macros.get(s); // TODO: decouple
 		if (m == null) throw 'Unknown macro: $s';
-		for (i in 0...args.length) {
+		for (i in 0...cl.length) {
 			var arg = m.args[i];
-			ctx.bind(arg.name, args[i]);
+			ctx.bind(arg.name, cl[i]);
 		}
 		processPart(ctx, m.part);
 		ctx.pop();
@@ -169,14 +174,16 @@ typedef CtxStack = haxe.ds.GenericStack<haxe.ds.StringMap<Dynamic>>;
 
 class Context {
 	
-	public var tabs(default, null):String;
+	var tabs(default, null):String;
 	var stack:CtxStack;
 	var buffer:StringBuf;
+	var hasNewline:Bool;
 	
 	public function new() {
 		stack = new CtxStack();
 		tabs = "";
 		buffer = new StringBuf();
+		hasNewline = false;
 	}
 	
 	public inline function push() {
@@ -200,7 +207,26 @@ class Context {
 	}
 	
 	public function append(s:String) {
+		if (hasNewline) {
+			buffer.add(tabs);
+			hasNewline = false;
+		}
 		buffer.add(s);
+	}
+	
+	public inline function newline() {
+		if (!hasNewline) {
+			buffer.add("\n");
+			hasNewline = true;
+		}
+	}
+	
+	public function increaseIndent() {
+		tabs += "\t";
+	}
+	
+	public function decreaseIndent() {
+		tabs = tabs.substr(1);
 	}
 	
 	public function getContent() {
