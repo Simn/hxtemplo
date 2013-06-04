@@ -56,7 +56,8 @@ class Template {
 					processPart(ctx, p);
 					ctx.pop();
 				}
-			case PValue(e) | PRaw(e): ctx.append(display(eval(ctx, e)));
+			case PValue(e): ctx.append(display(eval(ctx, e)));
+			case PRaw(e): ctx.append(eval(ctx, e));
 			case PNode(node):
 				ctx.newline();
 				ctx.append('<${node.node}');
@@ -94,7 +95,7 @@ class Template {
 	}
 	
 	function display(v:Dynamic) {
-		return v == null ? "" : Std.string(v);
+		return v == null ? "" : StringTools.htmlEscape(Std.string(v));
 	}
 	
 	function eval(ctx:Context, e:Expr):Dynamic {
