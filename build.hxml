@@ -1,7 +1,9 @@
 -cp src
 -cp test
 -main Test
--cp ../hxparse/src
+-lib hxparse
+-resource bin/macros.mtt@macros.mtt
+-resource bin/class.mtt@class.mtt
 --each
 
 -neko bin/hxtemplo.n
@@ -13,7 +15,10 @@
 -js bin/hxtemplo.js
 
 --next
--cpp bin/cpp
+-php bin/php
 
 --next
--php bin/php
+-java bin/java
+
+--next
+-cpp bin/cpp

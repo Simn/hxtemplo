@@ -1,20 +1,27 @@
 class Test {
 	
 	static function main() {
-		//var testPath = "http://caffeine-hx.googlecode.com/svn/trunk/projects/chxdoc/src/templates/default/class.mtt";
-		var testPath = "http://localhost:2000/class.mtt";
-		var http = new haxe.Http(testPath);
-		http.onData = function(data) {
-			function run() {
-				var parser = new templo.Parser(new haxe.io.StringInput(data), "class.mtt");
-				parser.parse();
-			}
-			haxe.Timer.measure(run);
-		}
-		http.onError = function(e) {
-			trace(e);
-		}
-		http.request(false);
+		new templo.Template(haxe.Resource.getString("macros.mtt"), "macros.mtt");
+		var tpl = new templo.Template(haxe.Resource.getString("class.mtt"), "class.mtt");
+		var str = tpl.execute([
+			"title" => "My docs",
+			"config" => {
+				title: "My Class"
+			},
+			"build" => {
+				comment: "I'm the greatest"
+			},
+			"superClassHtml" => "super class!",
+			"webmeta" => {
+				keywords: ["foo", "bar"]
+			},
+			"methods" => [ {
+				{
+					name: "myFunction"
+				}
+			}]
+		]);
+		trace(str);
 	}
 	
 }

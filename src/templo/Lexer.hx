@@ -1,7 +1,7 @@
 package templo;
 
 import String in StdString;
-import templo.Ast;
+import templo.Token;
 
 enum ErrorMsg {
 	InvalidOp(s:String);
@@ -82,7 +82,7 @@ class Lexer extends hxparse.Lexer implements hxparse.RuleBuilder {
 	
 	static public var element = @:rule [
 		"" => mk(lexer,Eof),
-		bom => lexer.token(element),
+		//bom => lexer.token(element),
 		"<" + attr => mk(lexer,Node(lexer.current.substr(1))),
 		macroRule,
 		"<!--" => {

@@ -1,5 +1,6 @@
 package templo;
-import templo.Ast;
+import templo.Token;
+import hxparse.Parser;
 
 enum ParserErrorMsg {
 	Unexpected(t:Token);
@@ -13,12 +14,8 @@ typedef Error = {
 }
 
 class Parser extends hxparse.Parser<Token> {
-
-	var lexerStream:hxparse.LexerStream<Token>;
-	
 	public function new(input:haxe.io.Input, sourceName:String) {
-		lexerStream = new hxparse.LexerStream(new Lexer(input, sourceName), Lexer.element);
-		super(lexerStream);
+		super(new hxparse.LexerStream(new Lexer(input, sourceName), Lexer.element));
 	}
 	
 	public function parse() {
@@ -50,10 +47,10 @@ class Parser extends hxparse.Parser<Token> {
 	}
 	
 	function parseCData() {
-		lexerStream.ruleset = Lexer.cdata;
+		stream.ruleset = Lexer.cdata;
 		var e = null;
 		var acc = [while ((e = parseElement()) != null) e];
-		lexerStream.ruleset = Lexer.element;
+		stream.ruleset = Lexer.element;
 		return acc;
 	}
 	
@@ -68,9 +65,9 @@ class Parser extends hxparse.Parser<Token> {
 			content: null,
 			ignore: false
 		};
-		lexerStream.ruleset = Lexer.attributes;
+		stream.ruleset = Lexer.attributes;
 		var c = parseNodeAttribs(n);
-		lexerStream.ruleset = Lexer.element;
+		stream.ruleset = Lexer.element;
 		if (c.hasContent) {
 			var content = program([]);
 			switch(content.tok) {
@@ -85,11 +82,11 @@ class Parser extends hxparse.Parser<Token> {
 		}
 	}
 	
-	function parseNodeAttribs(node:Node) {
+	function parseNodeAttribs(node:TNode) {
 		return switch stream {
 			case [{tok: NodeContent(c), pos:p}]: {hasContent: c, pos: p};
 			case [{tok: DoubleDot}]:
-				lexerStream.ruleset = Lexer.expr;
+				stream.ruleset = Lexer.expr;
 				switch stream {
 					case [{tok:Ident("cond"), pos:p}, e = parseExpr(), {tok:DoubleDot}]:
 						if (node.cond == null)
@@ -113,14 +110,14 @@ class Parser extends hxparse.Parser<Token> {
 						if (node.ignore) error(Message("Duplicate ignore"), p);
 						node.ignore = true;
 				}
-				lexerStream.ruleset = Lexer.attributes;
+				stream.ruleset = Lexer.attributes;
 				parseNodeAttribs(node);
 			case [{tok:Ident(attr)}, {tok:Op(OpAssign)}]:
-				lexerStream.ruleset = Lexer.attrvalue;
+				stream.ruleset = Lexer.attrvalue;
 				var v = switch stream {
 					case [{tok:Quote(b)}, v = parseAttribValues(b)]: v;
 				}
-				lexerStream.ruleset = Lexer.attributes;
+				stream.ruleset = Lexer.attributes;
 				node.attributes.push({
 					name: attr,
 					content: v
@@ -167,8 +164,8 @@ class Parser extends hxparse.Parser<Token> {
 	}
 	
 	function parseMacro() {
-		var old = lexerStream.ruleset;
-		lexerStream.ruleset = Lexer.macros;
+		var old = stream.ruleset;
+		stream.ruleset = Lexer.macros;
 		var el = switch stream {
 			case [{tok:ParentOpen}]:
 				switch stream {
@@ -176,7 +173,7 @@ class Parser extends hxparse.Parser<Token> {
 					case [el = parseMacroParams([],0,[])]: el;
 				}
 		}
-		lexerStream.ruleset = old;
+		stream.ruleset = old;
 		return el;
 	}
 	
@@ -227,22 +224,22 @@ class Parser extends hxparse.Parser<Token> {
 			case [{tok:Macro(m), pos:p1}, params = parseMacro()]: parseMacroParam(n, aadd(acc, {def:XMacroCall(m, params), pos:p1}));
 			case [{tok:Node(node), pos:p1}]:
 				var node = parseNode(node, p1);
-				lexerStream.ruleset = Lexer.macros;
+				stream.ruleset = Lexer.macros;
 				parseMacroParam(n, aadd(acc, node));
 			case _: { vl: acc, n:n};
 		}
 	}
 	
 	function parseMacroDef(p1) {
-		lexerStream.ruleset = Lexer.attributes;
+		stream.ruleset = Lexer.attributes;
 		var data = switch stream {
 			case [{tok:Ident("name")}, {tok:Op(OpAssign)}, {tok:Quote(b)}]:
-				lexerStream.ruleset = Lexer.expr;
+				stream.ruleset = Lexer.expr;
 				var mode = parseModeName();
 				var params = switch stream {
 					case [{tok:ParentOpen}]: parseMacroArgs(false);
 				}
-				lexerStream.ruleset = Lexer.attributes;
+				stream.ruleset = Lexer.attributes;
 				switch stream {
 					case [{tok:Quote(b2), pos:p}]: if (b != b2) error(Message("Stream error"), p);
 				}
@@ -271,10 +268,10 @@ class Parser extends hxparse.Parser<Token> {
 			case 0:
 				MContent([]);
 			case 1:
-				lexerStream.ruleset = Lexer.element;
+				stream.ruleset = Lexer.element;
 				var content = program([]);
 				switch(content.tok) {
-					case EndNode("macro"): null;
+					case EndNode("macro"): MContent(content.content);
 					case _: error(UnclosedNode("macro"),p1);
 				}
 			case _: throw "assert";
@@ -390,8 +387,8 @@ class Parser extends hxparse.Parser<Token> {
 	}
 	
 	function parseConstruct() {
-		var old = lexerStream.ruleset;
-		lexerStream.ruleset = Lexer.expr;
+		var old = stream.ruleset;
+		stream.ruleset = Lexer.expr;
 		var c = switch stream {
 			case [{tok:Ident("use")}, e = parseExpr()]: CUse(e);
 			case [{tok:Ident("raw")}, e = parseExpr()]: CRaw(e);
@@ -421,7 +418,7 @@ class Parser extends hxparse.Parser<Token> {
 			case [{tok:Op(OpCompare)}]: CCompareWith;
 			case [e = parseExpr()]: CValue(e);
 		}
-		lexerStream.ruleset = old;
+		stream.ruleset = old;
 		return switch stream {
 			case [{tok:DoubleDot, pos: p2}]: {
 				def: c,
@@ -463,7 +460,7 @@ class Parser extends hxparse.Parser<Token> {
 	static function canSwap(_op, op) {
 		var p1 = priority(_op);
 		var p2 = priority(op);
-		if (p1 < p2)
+		return if (p1 < p2)
 			true;
 		else if (p1 == p2 && p2 >= 0)
 			true;
@@ -494,6 +491,6 @@ class Parser extends hxparse.Parser<Token> {
 		}
 	}
 	
-	static inline function punion(p1,p2) return hxparse.Lexer.posUnion(p1, p2)
+	static inline function punion(p1,p2) return hxparse.Lexer.posUnion(p1, p2);
 		
 }

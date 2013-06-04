@@ -4,7 +4,7 @@
   <output>
     <movie outputType="CustomBuild" />
     <movie input="" />
-    <movie path="bin\hxtemplo.n" />
+    <movie path="bin\hxtemplo.swf" />
     <movie fps="30" />
     <movie width="800" />
     <movie height="600" />
@@ -17,7 +17,6 @@
   <classpaths>
     <class path="src" />
     <class path="test" />
-    <class path="..\hxparse\src" />
   </classpaths>
   <!-- Build options -->
   <build>
@@ -40,13 +39,14 @@
     <!-- example: <hidden path="..." /> -->
   </hiddenPaths>
   <!-- Executed before build -->
-  <preBuildCommand>haxe build.hxml</preBuildCommand>
+  <preBuildCommand>"$(CompilerPath)/haxe" build.hxml</preBuildCommand>
   <!-- Executed after build -->
   <postBuildCommand alwaysRun="False" />
   <!-- Other project options -->
   <options>
     <option showHiddenPaths="False" />
-    <option testMovie="Unknown" />
+    <option testMovie="Custom" />
+    <option testMovieCommand="" />
   </options>
   <!-- Plugin storage -->
   <storage />
