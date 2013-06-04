@@ -7,8 +7,8 @@ class Template {
 
 	var part:Part;
 	
-	public function new(s:String, ?sourceName = null) {
-		var parser = new templo.Parser(new haxe.io.StringInput(s), sourceName);
+	public function new(input:haxe.io.Input, ?sourceName = null) {
+		var parser = new templo.Parser(input, sourceName);
 		part = templo.Converter.toAst(parser.parse());
 	}
 	
@@ -39,6 +39,7 @@ class Template {
 				else if (pelse != null) processPart(ctx, pelse);
 			case PForeach(s, it, p):
 				var v:Dynamic = eval(ctx, it);
+				if (v == null) return;
 				try {
 					var x : Dynamic = v.iterator();
 					if( x.hasNext == null ) throw null;
