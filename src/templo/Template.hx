@@ -58,6 +58,7 @@ class Template {
 				}
 			case PValue(e): ctx.append(display(eval(ctx, e)));
 			case PRaw(e): ctx.append(eval(ctx, e));
+			case PNode(node) if (node.cond != null && eval(ctx, node.cond) == false):
 			case PNode(node):
 				ctx.newline();
 				ctx.append('<${node.node}');
