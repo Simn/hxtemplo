@@ -200,6 +200,7 @@ class Parser extends hxparse.Parser<Token> {
 						if (n == 0) {
 							vl.reverse();
 							acc.push(vl);
+							acc.reverse();
 							acc;
 						} else {
 							vl.push({
