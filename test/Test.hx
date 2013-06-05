@@ -68,6 +68,11 @@ class Test extends haxe.unit.TestCase {
 		weq('before2after1', mkt(s, ["myValue" => 2]));
 	}
 	
+	function testFill() {
+		var s = '::fill myValue::<node1>Some code</node1>::end::Some other code,::raw myValue::';
+		weq('Some other code,<node1>Some code</node1>', mkt(s, ["myValue" => "foo"]));
+	}
+	
 	function mkt(s:String, map:Map<String, Dynamic>) {
 		return new templo.Template(new haxe.io.StringInput(s)).execute(map);
 	}

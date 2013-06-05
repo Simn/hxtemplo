@@ -95,10 +95,13 @@ class Converter {
 				switch(b.type) {
 					case BTNormal: error("Unexpected end", c.pos);
 					case BTForeach(s, e): push(PForeach(s, e, mkBlock(b.elements)));
+					case BTFill(s): push(PFill(s, mkBlock(b.elements)));
 					case BTIf(_) | BTElseif(_) | BTElse(_): push(unwrap(b, null));
 				}
 			case CSet(s, e1):
 				push(PSet(s, e1));
+			case CFill(s):
+				pushBlock(BTFill(s));
 			case cd:
 				throw 'Niy: $cd at ${c.pos}';
 		}
@@ -131,6 +134,7 @@ enum BlockType {
 	BTElseif(b:Block, e:Expr);
 	BTElse(b:Block);
 	BTForeach(s:String, e:Expr);
+	BTFill(s:String);
 }
 
 class Block {

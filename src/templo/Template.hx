@@ -65,6 +65,10 @@ class Template {
 				ctx.newline();
 				ctx.append('</${node.node}>');
 				ctx.newline();
+			case PFill(s, body):
+				ctx.pushBuffer();
+				processPart(ctx, body);
+				ctx.bind(s, ctx.popBuffer().toString());
 		}
 	}
 	
@@ -221,10 +225,13 @@ class Context {
 	var buffer:StringBuf;
 	var hasNewline:Bool;
 	
+	var bufferStack:haxe.ds.GenericStack<StringBuf>;
+	
 	public function new() {
 		stack = new CtxStack();
 		tabs = "";
 		buffer = new StringBuf();
+		bufferStack = new haxe.ds.GenericStack<StringBuf>();
 		hasNewline = false;
 	}
 	
@@ -234,6 +241,17 @@ class Context {
 	
 	public inline function pop() {
 		return stack.pop();
+	}
+	
+	public inline function pushBuffer() {
+		bufferStack.add(buffer);
+		buffer = new StringBuf();
+	}
+	
+	public inline function popBuffer() {
+		var b = buffer;
+		buffer = bufferStack.pop();
+		return b;
 	}
 	
 	public function bind<T>(s:String, v:T) {
