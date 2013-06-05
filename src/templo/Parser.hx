@@ -347,7 +347,7 @@ class Parser extends hxparse.Parser<Token> {
 			case [{tok:Dot}, {tok:Ident(f), pos:p2}]: parseExprNext({expr: VField(e1,f), pos:punion(p1,p2)});
 			case [{tok:ParentOpen}, args = parseExprList(), {tok:ParentClose, pos:p2}]: parseExprNext({expr:VCall(e1, args), pos:punion(p1,p2)});
 			case [{tok: Op(op)}, e2 = parseExpr()]: makeBinop(op,e1,e2);
-			case [{tok: Unop(op), pos:p}]: parseExprNext({expr:VUnop(op, false, e1), pos:p});
+			case [{tok: Unop(op), pos:p}]: parseExprNext({expr:VUnop(op, true, e1), pos:p});
 			case [{tok:BracketOpen}, e2 = parseExpr(), {tok:BracketClose, pos:p2}]: parseExprNext({expr: VArray(e1, e2),pos:punion(p1,p2)});
 			case _: e1;
 		}
@@ -472,7 +472,7 @@ class Parser extends hxparse.Parser<Token> {
 	static function makeUnop(op, e:Expr, p1) {
 		return switch(e) {
 			case {expr:VBinop(bop,e,e2), pos:p2}: {expr:VBinop(bop,makeUnop(op,e,p1),e2), pos:punion(p1,p2)};
-			case {pos:p2}: {expr:VUnop(op,true,e), pos: punion(p1,p2)};
+			case {pos:p2}: {expr:VUnop(op,false,e), pos: punion(p1,p2)};
 		}
 	}
 	
