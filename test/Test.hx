@@ -90,7 +90,7 @@ class Test extends haxe.unit.TestCase {
 	}
 	
 	function mkt(s:String, map:{}) {
-		return new templo.Template(new haxe.io.StringInput(s)).execute(map);
+		return templo.Template.fromString(s).execute(map);
 	}
 	
 	function weq(expected:String, actual:String, ?p) {

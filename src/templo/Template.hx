@@ -25,12 +25,16 @@ import templo.Token;
 **/
 class Template {
 
+	static var partMap:Map<String, Part> = new Map();
+	
 	var part:Part;
 	
 	/**
 		Creates a new Template by parsing `input`.
 		
-		If `sourceName` is provided, error messages will contain its value.
+		If `sourceName` is provided, error messages will contain its value. It
+		is also recorded in a global lookup and can be used as argument to
+		`::use`.
 		
 		The parsing process is expensive, but it only has to be done once for
 		each input source. Template maintains no state other than the parsed
@@ -42,7 +46,25 @@ class Template {
 	public function new(input:haxe.io.Input, ?sourceName = null) {
 		var parser = new templo.Parser(input, sourceName);
 		part = templo.Converter.toAst(parser.parse());
+		if (sourceName != null) partMap.set(sourceName, part);
 	}
+	
+	/**
+		Convenience function for creating a new Template from a String.
+	**/
+	static public function fromString(s:String, ?sourceName = null) {
+		return new Template(new haxe.io.StringInput(s), sourceName);
+	}
+	
+	#if sys
+	/**
+		Convenience function for creating a new Template from a file.
+	**/
+	static public function fromFile(path:String) {
+		var p = new haxe.io.Path(path);
+		return new Template(sys.io.File.read(path), p.file + "." + p.ext);
+	}
+	#end
 	
 	/**
 		Executes `this` Template with the provided `data` as context.
