@@ -15,6 +15,7 @@ enum Part {
 	PSet(s:String, e1:Expr);
 	PFill(s:String, body:Part);
 	PMacroCall(s:String, cl:Array<Part>);
+	PUse(e:Expr, body:Part);
 }
 
 class Named<T> {

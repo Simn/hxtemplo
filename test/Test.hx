@@ -89,6 +89,18 @@ class Test extends haxe.unit.TestCase {
 		weq("14 XP", mkt(s, {myEnum: XP(14)}));
 	}
 	
+	function testUse() {
+		templo.Template.fromString("abc::myValue::def", "mySource");
+		var s = 'use ::use "mySource"::::end:: again.::set myValue = 9:: ::use "mySource"::::end::ok';
+		weq('use abc2def again. abc9defok', mkt(s, { myValue: 2 }));
+	}
+	
+	function testUseContent() {
+		templo.Template.fromString("abc::raw __content__::def", "mySource2");
+		var s = '987::use "mySource2"::1234::end::456';
+		weq('987abc1234def456', mkt(s, {}));
+	}
+	
 	function mkt(s:String, map:{}) {
 		return templo.Template.fromString(s).execute(map);
 	}

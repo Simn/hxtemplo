@@ -17,10 +17,10 @@ import templo.Token;
 		- `::cond` (within node definition)
 		- `::repeat`` (within node definition)
 		- `::switch` and `::case`
-	
-	The following directives are currently unsupported due to varying reasons:
-		
 		- `::use`
+	
+	The following directives are currently unsupported:
+	
 		- `::attr`
 **/
 class Template {
@@ -135,6 +135,18 @@ class Template {
 					processPart(ctx, cases[i]);
 					ctx.pop();
 				}
+			case PUse(e, body):
+				var v = eval(ctx, e);
+				#if sys
+				if (!partMap.exists(v) && sys.FileSystem.exists(v)) Template.fromFile(v);
+				#end
+				if (!partMap.exists(v)) throw "Could not find template " + v;
+				ctx.push();
+				ctx.pushBuffer();
+				processPart(ctx, body);
+				ctx.bind("__content__", ctx.popBuffer().toString());
+				processPart(ctx, partMap.get(v));
+				ctx.pop();
 		}
 	}
 	

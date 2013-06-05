@@ -97,6 +97,7 @@ class Converter {
 					case BTForeach(s, e): push(PForeach(s, e, mkBlock(b.elements)));
 					case BTFill(s): push(PFill(s, mkBlock(b.elements)));
 					case BTIf(_) | BTElseif(_) | BTElse(_): push(unwrap(b, null));
+					case BTUse(e): push(PUse(e, mkBlock(b.elements)));
 					case BTCase(_,_):
 						var cases = [];
 						while (true) {
@@ -124,7 +125,8 @@ class Converter {
 					case BTSwitch(_) | BTCase(_): pushBlock(BTCase(b, i));
 					case _: error("Unexpected case", c.pos);
 				}
-			case cd = (CUse(_) | CSwitch(_) | CEval(_) | CCase(_) | CCompare | CCompareWith):
+			case CUse(e): pushBlock(BTUse(e));
+			case cd = (CUse(_) | CEval(_) | CCompare | CCompareWith):
 				throw 'Not implemented yet: $cd at ${c.pos}';
 		}
 	}
@@ -159,6 +161,7 @@ enum BlockType {
 	BTFill(s:String);
 	BTSwitch(e:Expr);
 	BTCase(b:Block, i:Int);
+	BTUse(e:Expr);
 }
 
 class Block {
