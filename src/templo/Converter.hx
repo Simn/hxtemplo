@@ -102,8 +102,8 @@ class Converter {
 				push(PSet(s, e1));
 			case CFill(s):
 				pushBlock(BTFill(s));
-			case cd:
-				throw 'Niy: $cd at ${c.pos}';
+			case cd = (CUse(_) | CSwitch(_) | CEval(_) | CCase(_) | CCompare | CCompareWith):
+				throw 'Not implemented yet: $cd at ${c.pos}';
 		}
 	}
 	
