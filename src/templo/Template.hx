@@ -16,12 +16,12 @@ import templo.Token;
 		- `::fill`
 		- `::cond` (within node definition)
 		- `::repeat`` (within node definition)
+		- `::attr` (within node definition)
 		- `::switch` and `::case`
 		- `::use`
 	
 	The following directives are currently unsupported:
 	
-		- `::attr`
 		- `::eval`
 		- `::compare`
 		- `~=`
@@ -99,7 +99,7 @@ class Template {
 				var v = getIterator(eval(ctx, it));
 				iterate(ctx, s, v, p);
 			case PValue(e): ctx.append(display(eval(ctx, e)));
-			case PRaw(e): ctx.append(eval(ctx, e));
+			case PRaw(e): ctx.append(Std.string(eval(ctx, e)));
 			case PNode(node) if (node.cond != null && eval(ctx, node.cond) == false):
 			case PNode(node) if (node.repeat != null):
 				var v = getIterator(eval(ctx, node.repeat.t));
@@ -176,7 +176,7 @@ class Template {
 	}
 	
 	function display(v:Dynamic) {
-		return v == null ? "" : StringTools.htmlEscape(Std.string(v));
+		return StringTools.htmlEscape(Std.string(v));
 	}
 	
 	function getIterator(v:Dynamic):Iterator<Dynamic> {
@@ -295,9 +295,13 @@ class Template {
 				untyped eval(ctx, e1)[eval(ctx, e2)];
 			case VArrayDecl(el):
 				el.map(eval.bind(ctx));
+			case VCall(e1 = {expr: VField(ef, s)}, el):
+				var ef = eval(ctx, ef);
+				var field = Reflect.field(ef, s);
+				Reflect.callMethod(ef, field, el.map(eval.bind(ctx)));
 			case VCall(e1, el):
 				var e1 = eval(ctx, e1);
-				Reflect.callMethod(ctx, e1, el.map(eval.bind(ctx)));
+				Reflect.callMethod(e1, e1, el.map(eval.bind(ctx)));
 		}
 	}
 }
