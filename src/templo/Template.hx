@@ -257,28 +257,30 @@ class Template {
 			case VLiteral(e1):
 				eval(ctx, e1); // ???
 			case VBinop(op, e1, e2):
-				var e1:Dynamic = eval(ctx, e1);
-				var e2:Dynamic = eval(ctx, e2);
 				switch(op) {
-					case OpAdd: e1 + e2;
-					case OpMult: e1 * e2;
-					case OpDiv: e1 / e2;
-					case OpSub: e1 - e2;
-					case OpEq: e1 == e2;
-					case OpNotEq: e1 != e2;
-					case OpGt: e1 > e2;
-					case OpGte: e1 >= e2;
-					case OpLt: e1 < e2;
-					case OpLte: e1 <= e2;
-					case OpAnd: e1 & e2;
-					case OpOr: e1 | e2;
-					case OpXor: e1 ^ e2;
-					case OpBoolAnd: e1 && e2;
-					case OpBoolOr: e1 || e2;
-					case OpShl: e1 << e2;
-					case OpShr: e1 >> e2;
-					case OpUShr: e1 >>> e2;
-					case OpMod: e1 % e1;
+					case OpAdd: eval(ctx, e1) + eval(ctx, e2);
+					case OpMult: eval(ctx, e1) * eval(ctx, e2);
+					case OpDiv: eval(ctx, e1) / eval(ctx, e2);
+					case OpSub: eval(ctx, e1) - eval(ctx, e2);
+					case OpEq: eval(ctx, e1) == eval(ctx, e2);
+					case OpNotEq: eval(ctx, e1) != eval(ctx, e2);
+					case OpGt: eval(ctx, e1) > eval(ctx, e2);
+					case OpGte: eval(ctx, e1) >= eval(ctx, e2);
+					case OpLt: eval(ctx, e1) < eval(ctx, e2);
+					case OpLte: eval(ctx, e1) <= eval(ctx, e2);
+					case OpAnd: eval(ctx, e1) & eval(ctx, e2);
+					case OpOr: eval(ctx, e1) | eval(ctx, e2);
+					case OpXor: eval(ctx, e1) ^ eval(ctx, e2);
+					case OpBoolAnd:
+						if (!eval(ctx, e1)) false;
+						else eval(ctx, e2);
+					case OpBoolOr:
+						if (eval(ctx, e1)) true;
+						else eval(ctx, e2);
+					case OpShl: eval(ctx, e1) << eval(ctx, e2);
+					case OpShr: eval(ctx, e1) >> eval(ctx, e2);
+					case OpUShr: eval(ctx, e1) >>> eval(ctx, e2);
+					case OpMod: eval(ctx, e1) % eval(ctx, e1);
 					case OpCompare: throw "???";
 					case OpAssign:
 						throw "assigning is not supported";	
