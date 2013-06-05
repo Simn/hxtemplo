@@ -101,6 +101,12 @@ class Test extends haxe.unit.TestCase {
 		weq('987abc1234def456', mkt(s, {}));
 	}
 	
+	function testAttr() {
+		var s = '<node ::attr test myValue1:: ::attr test2 myValue2::></node>';
+		weq('<node test2="9"></node>', mkt(s, { myValue2: 9 }));
+		weq('<node test="17" test2="9"></node>', mkt(s, { myValue1: 17, myValue2: 9 }));
+	}
+	
 	function mkt(s:String, map:{}) {
 		return templo.Template.fromString(s).execute(map);
 	}

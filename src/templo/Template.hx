@@ -115,6 +115,11 @@ class Template {
 					processPart(ctx, attr.t);
 					ctx.append('"');
 				}
+				for (attr in node.attrs) {
+					var e = eval(ctx, attr.t);
+					if (e == null) continue;
+					ctx.append(' ${attr.name}="$e"');
+				}
 				ctx.append(">");
 				ctx.newline();
 				ctx.increaseIndent();
