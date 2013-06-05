@@ -37,7 +37,7 @@ class Parser extends hxparse.Parser<Token> {
 	
 	function parseElement() {
 		return switch stream {
-			case [{tok:Data(str), pos: p}]: {def: XData(StringTools.trim(str)), pos:p}
+			case [{tok:Data(str), pos: p}]: {def: XData(str), pos:p}
 			case [{tok:Comment(n), pos: p}]: {def: XComment(n), pos:p}
 			case [{tok:DoubleDot, pos: p}, c = parseConstruct()]: {def: XConstr(c), pos:punion(p,c.pos)}
 			case [{tok:Node(n), pos: p}, node = (n == "macro") ? parseMacroDef(p) : parseNode(n,p)]: node;
