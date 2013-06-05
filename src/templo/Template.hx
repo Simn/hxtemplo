@@ -38,18 +38,7 @@ class Template {
 				if(eval(ctx, eif)) processPart(ctx, pthen);
 				else if (pelse != null) processPart(ctx, pelse);
 			case PForeach(s, it, p):
-				var v:Dynamic = eval(ctx, it);
-				if (v == null) return;
-				try {
-					var x : Dynamic = v.iterator();
-					if( x.hasNext == null ) throw null;
-					v = x;
-				} catch( e : Dynamic ) try {
-					if( v.hasNext == null ) throw null;
-				} catch( e : Dynamic ) {
-					throw "Cannot iter on " + v;
-				}
-				var v : Iterator<Dynamic> = v;
+				var v = getIterator(eval(ctx, it));
 				for( i in v ) {
 					ctx.push();
 					ctx.bind(s, i);
@@ -97,6 +86,19 @@ class Template {
 	
 	function display(v:Dynamic) {
 		return v == null ? "" : StringTools.htmlEscape(Std.string(v));
+	}
+	
+	function getIterator(v:Dynamic):Iterator<Dynamic> {
+		try {
+			var x : Dynamic = v.iterator();
+			if( x.hasNext == null ) throw null;
+			v = x;
+		} catch( e : Dynamic ) try {
+			if( v.hasNext == null ) throw null;
+		} catch( e : Dynamic ) {
+			throw "Cannot iter on " + v;
+		}
+		return v;		
 	}
 	
 	function eval(ctx:Context, e:Expr):Dynamic {
