@@ -4,6 +4,7 @@
 -lib hxparse
 -resource bin/macros.mtt@macros.mtt
 -resource bin/class.mtt@class.mtt
+-debug
 --each
 
 #-neko bin/hxtemplo.n

@@ -39,12 +39,7 @@ class Template {
 				else if (pelse != null) processPart(ctx, pelse);
 			case PForeach(s, it, p):
 				var v = getIterator(eval(ctx, it));
-				for( i in v ) {
-					ctx.push();
-					ctx.bind(s, i);
-					processPart(ctx, p);
-					ctx.pop();
-				}
+				iterate(ctx, s, v, p);
 			case PValue(e): ctx.append(display(eval(ctx, e)));
 			case PRaw(e): ctx.append(eval(ctx, e));
 			case PNode(node) if (node.cond != null && eval(ctx, node.cond) == false):
@@ -52,12 +47,7 @@ class Template {
 				var v = getIterator(eval(ctx, node.repeat.t));
 				var r = node.repeat;
 				node.repeat = null;
-				for (i in v) {
-					ctx.push();
-					ctx.bind(r.name, i);
-					processPart(ctx, e);
-					ctx.pop();
-				}
+				iterate(ctx, r.name, v, e);
 				node.repeat = r;
 			case PNode(node):
 				ctx.newline();
@@ -110,6 +100,38 @@ class Template {
 			throw "Cannot iter on " + v;
 		}
 		return v;		
+	}
+	
+	function iterate<T>(ctx:Context, s:String, v:Iterator<T>, part:Part) {
+		var repeat = {
+			index: -1,
+			number: 0,
+			odd: true,
+			even: false,
+			first: true,
+			last: false,
+			size: 0
+		};
+		ctx.push();
+		var r = ctx.lookup("repeat", null);
+		if (r == null) {
+			r = {};
+			ctx.bind("repeat", r);
+		}
+		Reflect.setField(r, s, repeat);
+		for ( i in v ) {
+			repeat.index++;
+			repeat.number++;
+			repeat.even = repeat.index & 1 == 0;
+			repeat.odd = !repeat.even;
+			repeat.last = !v.hasNext();
+			ctx.push();
+			ctx.bind(s, i);
+			processPart(ctx, part);
+			ctx.pop();
+			repeat.first = false;
+		}
+		ctx.pop();
 	}
 	
 	function eval(ctx:Context, e:Expr):Dynamic {
@@ -222,7 +244,7 @@ class Context {
 		for (st in stack) {
 			if (st.exists(s)) return st.get(s);
 		}
-		trace(formatPos(pos) + ": Warning: Unknown identifier " +s);
+		//trace(formatPos(pos) + ": Warning: Unknown identifier " +s);
 		return null;
 	}
 	

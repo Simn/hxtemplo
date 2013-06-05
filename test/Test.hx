@@ -56,6 +56,18 @@ class Test extends haxe.unit.TestCase {
 		weq('<node1><node2>value1</node2></node1>', mkt(s, ["myIterable" => [1]]));
 	}
 	
+	function testForeachContext() {
+		var s = '::foreach n myIterable::index::repeat.n.index::,number::repeat.n.number::,odd::repeat.n.odd::,even::repeat.n.even::,first::repeat.n.first::,last::repeat.n.last::::end::';
+		weq("", mkt(s, ["myIterable" => []]));
+		weq("index0,number1,oddfalse,eventrue,firsttrue,lasttrue", mkt(s, ["myIterable" => [1]]));
+		weq("index0,number1,oddfalse,eventrue,firsttrue,lastfalseindex1,number2,oddtrue,evenfalse,firstfalse,lastfalseindex2,number3,oddfalse,eventrue,firstfalse,lasttrue", mkt(s, ["myIterable" => [1,2,3]]));
+	}
+	
+	function testSet() {
+		var s = 'before::myValue::::set myValue=1::after::myValue::';
+		weq('before2after1', mkt(s, ["myValue" => 2]));
+	}
+	
 	function mkt(s:String, map:Map<String, Dynamic>) {
 		return new templo.Template(new haxe.io.StringInput(s)).execute(map);
 	}
