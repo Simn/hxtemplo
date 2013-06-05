@@ -29,7 +29,7 @@ class Node {
 	public var node:String;
 	public var attributes:Array<Named<Part>>;
 	public var macros:Array<Named<Array<Part>>>;
-	public var cond:Expr;
+	public var cond:Null<Expr>;
 	public var repeat:Null<Named<Expr>>;
 	public var attrs:Array<Named<Expr>>;
 	public var content:Null<Part>;
