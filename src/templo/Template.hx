@@ -48,6 +48,17 @@ class Template {
 			case PValue(e): ctx.append(display(eval(ctx, e)));
 			case PRaw(e): ctx.append(eval(ctx, e));
 			case PNode(node) if (node.cond != null && eval(ctx, node.cond) == false):
+			case PNode(node) if (node.repeat != null):
+				var v = getIterator(eval(ctx, node.repeat.t));
+				var r = node.repeat;
+				node.repeat = null;
+				for (i in v) {
+					ctx.push();
+					ctx.bind(r.name, i);
+					processPart(ctx, e);
+					ctx.pop();
+				}
+				node.repeat = r;
 			case PNode(node):
 				ctx.newline();
 				ctx.append('<${node.node}');

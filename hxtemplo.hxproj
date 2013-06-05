@@ -28,7 +28,7 @@
   </build>
   <!-- haxelib libraries -->
   <haxelib>
-    <!-- example: <library name="..." /> -->
+    <library name="hxparse" />
   </haxelib>
   <!-- Class files to compile (other referenced classes will automatically be included) -->
   <compileTargets>
@@ -45,8 +45,8 @@
   <!-- Other project options -->
   <options>
     <option showHiddenPaths="False" />
-    <option testMovie="Custom" />
-    <option testMovieCommand="" />
+    <option testMovie="OpenDocument" />
+    <option testMovieCommand="bin/hxtemplo.swf" />
   </options>
   <!-- Plugin storage -->
   <storage />

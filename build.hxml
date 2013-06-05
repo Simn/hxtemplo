@@ -6,19 +6,19 @@
 -resource bin/class.mtt@class.mtt
 --each
 
--neko bin/hxtemplo.n
+#-neko bin/hxtemplo.n
 
---next
+#--next
 -swf bin/hxtemplo.swf
 
---next
--js bin/hxtemplo.js
+#--next
+#-js bin/hxtemplo.js
 
---next
--php bin/php
+#--next
+#-php bin/php
 
---next
--java bin/java
+#--next
+#-java bin/java
 
---next
--cpp bin/cpp
+#--next
+#-cpp bin/cpp
