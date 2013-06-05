@@ -22,6 +22,9 @@ import templo.Token;
 	The following directives are currently unsupported:
 	
 		- `::attr`
+		- `::eval`
+		- `::compare`
+		- `~=`
 **/
 class Template {
 
