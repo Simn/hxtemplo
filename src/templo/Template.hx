@@ -130,7 +130,6 @@ class Template {
 				throw "postfix unops are not supported";
 			case VLiteral(e1):
 				eval(ctx, e1); // ???
-
 			case VBinop(op, e1, e2):
 				var e1:Dynamic = eval(ctx, e1);
 				var e2:Dynamic = eval(ctx, e2);

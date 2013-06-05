@@ -1,8 +1,8 @@
 class Test {
 	
 	static function main() {
-		new templo.Template(haxe.Resource.getString("macros.mtt"), "macros.mtt");
-		var tpl = new templo.Template(haxe.Resource.getString("class.mtt"), "class.mtt");
+		new templo.Template(new haxe.io.StringInput(haxe.Resource.getString("macros.mtt")), "macros.mtt");
+		var tpl = new templo.Template(new haxe.io.StringInput(haxe.Resource.getString("class.mtt")), "class.mtt");
 		var str = tpl.execute([
 			"title" => "My docs",
 			"config" => {
