@@ -3,26 +3,59 @@ package templo;
 import templo.Ast;
 import templo.Token;
 
+/**
+	The templo Template class provides advanced templating support.
+	
+	Templo directives start with two double-dots: `::directive`. The supported
+	directives are:
+		
+		- `::raw`
+		- `::if`, `::elseif` and `::else`
+		- `::foreach`
+		- `::set`
+		- `::fill`
+		- `::cond` (within node definition)
+		- `::repeat`` (within node definition)
+	
+	The following directives are currently unsupported due to varying reasons:
+		
+		- `::switch` and `::case`
+		- `::use`
+		- `::attr`
+**/
 class Template {
 
 	var part:Part;
 	
+	/**
+		Creates a new Template by parsing `input`.
+		
+		If `sourceName` is provided, error messages will contain its value.
+		
+		The parsing process is expensive, but it only has to be done once for
+		each input source. Template maintains no state other than the parsed
+		template information, so the intended usage is to create a Template
+		once and then invoke its `execute` method multiple times.
+		
+		If `input` is null, the result is unspecified.
+	**/
 	public function new(input:haxe.io.Input, ?sourceName = null) {
 		var parser = new templo.Parser(input, sourceName);
 		part = templo.Converter.toAst(parser.parse());
 	}
 	
-	public function execute(data:Map<String, Dynamic>) {
+	/**
+		Executes `this` Template with the provided `data` as context.
+		
+		Each invocation of `execute` has its own context.
+	**/
+	public function execute(data:{}) {
 		var ctx = new Context();
 		ctx.push();
 		ctx.bind("null", null);
 		ctx.bind("true", true);
 		ctx.bind("false", false);
-		
-		for (key in data.keys()) {
-			var d = data.get(key);
-			ctx.bind(key, d);
-		}
+		if (data != null) Lambda.iter(Reflect.fields(data), function(s) ctx.bind(s, Reflect.field(data, s)));
 		processPart(ctx, part);
 		ctx.pop();
 		return ctx.getContent();
