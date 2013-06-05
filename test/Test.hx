@@ -1,9 +1,9 @@
 enum QuestItem
 {
-     ITEM(id:Int);
-     MONEY(amount:Int);
-     XP(amount:Int);
-	 OTHER;
+	ITEM(id:Int);
+	MONEY(amount:Int);
+	XP(amount:Int);
+	OTHER;
 }
 
 class Test extends haxe.unit.TestCase {
