@@ -11,6 +11,7 @@ enum Part {
 	PComment(s:String);
 	PForeach(s:String, it:Expr, body:Part);
 	PIf(e1:Expr, e2:Part, e3:Null<Part>);
+	PSwitch(e1:Expr, cases:Array<Part>, def:Null<Part>);
 	PSet(s:String, e1:Expr);
 	PFill(s:String, body:Part);
 	PMacroCall(s:String, cl:Array<Part>);

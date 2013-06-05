@@ -93,15 +93,37 @@ class Converter {
 				}
 				var b = popBlock();
 				switch(b.type) {
-					case BTNormal: error("Unexpected end", c.pos);
+					case BTNormal | BTSwitch(_): error("Unexpected end", c.pos);
 					case BTForeach(s, e): push(PForeach(s, e, mkBlock(b.elements)));
 					case BTFill(s): push(PFill(s, mkBlock(b.elements)));
 					case BTIf(_) | BTElseif(_) | BTElse(_): push(unwrap(b, null));
+					case BTCase(_,_):
+						var cases = [];
+						while (true) {
+							switch(b.type) {
+								case BTCase(b2,_):
+									cases.push(mkBlock(b.elements));
+									b = b2;
+								case BTSwitch(e):
+									cases.reverse();
+									push(PSwitch(e, cases, mkBlock(b.elements)));
+									break;
+								case b: throw "assert";
+							}
+						}
 				}
 			case CSet(s, e1):
 				push(PSet(s, e1));
 			case CFill(s):
 				pushBlock(BTFill(s));
+			case CSwitch(e):
+				pushBlock(BTSwitch(e));
+			case CCase(i):
+				var b = popBlock();
+				switch(b.type) {
+					case BTSwitch(_) | BTCase(_): pushBlock(BTCase(b, i));
+					case _: error("Unexpected case", c.pos);
+				}
 			case cd = (CUse(_) | CSwitch(_) | CEval(_) | CCase(_) | CCompare | CCompareWith):
 				throw 'Not implemented yet: $cd at ${c.pos}';
 		}
@@ -135,6 +157,8 @@ enum BlockType {
 	BTElse(b:Block);
 	BTForeach(s:String, e:Expr);
 	BTFill(s:String);
+	BTSwitch(e:Expr);
+	BTCase(b:Block, i:Int);
 }
 
 class Block {

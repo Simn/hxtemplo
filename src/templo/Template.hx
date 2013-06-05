@@ -16,10 +16,10 @@ import templo.Token;
 		- `::fill`
 		- `::cond` (within node definition)
 		- `::repeat`` (within node definition)
+		- `::switch` and `::case`
 	
 	The following directives are currently unsupported due to varying reasons:
 		
-		- `::switch` and `::case`
 		- `::use`
 		- `::attr`
 **/
@@ -102,6 +102,17 @@ class Template {
 				ctx.pushBuffer();
 				processPart(ctx, body);
 				ctx.bind(s, ctx.popBuffer().toString());
+			case PSwitch(e1, cases, def):
+				var v = eval(ctx, e1);
+				var i = Type.enumIndex(v);
+				if (i >= cases.length)
+					processPart(ctx, def);
+				else {
+					ctx.push();
+					ctx.bind("args", Type.enumParameters(v));
+					processPart(ctx, cases[i]);
+					ctx.pop();
+				}
 		}
 	}
 	

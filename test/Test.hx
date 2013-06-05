@@ -1,3 +1,11 @@
+enum QuestItem
+{
+     ITEM(id:Int);
+     MONEY(amount:Int);
+     XP(amount:Int);
+	 OTHER;
+}
+
 class Test extends haxe.unit.TestCase {
 	
 	static var whitespaceEreg = ~/[\t\n\r]*/g;
@@ -71,6 +79,14 @@ class Test extends haxe.unit.TestCase {
 	function testFill() {
 		var s = '::fill myValue::<node1>Some code</node1>::end::Some other code,::raw myValue::';
 		weq('Some other code,<node1>Some code</node1>', mkt(s, {"myValue": "foo"}));
+	}
+	
+	function testSwitch() {
+		var s = '::switch myEnum::default::case::Item ::args[0]::::case::::args[0]:: gold::case::::args[0]:: XP::end::';
+		weq("default", mkt(s, {myEnum: OTHER}));
+		weq("Item12", mkt(s, {myEnum: ITEM(12)}));
+		weq("13gold", mkt(s, {myEnum: MONEY(13)}));
+		weq("14XP", mkt(s, {myEnum: XP(14)}));
 	}
 	
 	function mkt(s:String, map:{}) {
