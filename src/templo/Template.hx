@@ -135,7 +135,7 @@ class Template {
 			case PSwitch(e1, cases, def):
 				var v = eval(ctx, e1);
 				var i = Type.enumIndex(v);
-				if (i >= cases.length)
+				if (cases[i] == null)
 					processPart(ctx, def);
 				else {
 					ctx.push();

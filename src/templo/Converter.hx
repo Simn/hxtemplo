@@ -98,16 +98,25 @@ class Converter {
 					case BTFill(s): push(PFill(s, mkBlock(b.elements)));
 					case BTIf(_) | BTElseif(_) | BTElse(_): push(unwrap(b, null));
 					case BTUse(e): push(PUse(e, mkBlock(b.elements)));
-					case BTCase(_,_):
+					case BTCase(b2,i):
+						// TODO: make this less idiotic
 						var cases = [];
+						var cases2 = [];
+						if (i == -1) cases2.push(mkBlock(b.elements));
+						else cases[i] = mkBlock(b.elements);
+						b = b2;
 						while (true) {
 							switch(b.type) {
-								case BTCase(b2,_):
-									cases.push(mkBlock(b.elements));
+								case BTCase(b2,i):
+									if (i == -1) cases2.push(mkBlock(b.elements));
+									else cases[i] = mkBlock(b.elements);
 									b = b2;
 								case BTSwitch(e):
-									cases.reverse();
-									push(PSwitch(e, cases, mkBlock(b.elements)));
+									cases2.reverse();
+									for (c in 0...cases.length) {
+										if (cases[i] != null) cases2[i] = cases[i];
+									}
+									push(PSwitch(e, cases2, mkBlock(b.elements)));
 									break;
 								case b: throw "assert";
 							}
