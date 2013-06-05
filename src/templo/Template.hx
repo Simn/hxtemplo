@@ -300,10 +300,18 @@ class Template {
 			case VCall(e1 = {expr: VField(ef, s)}, el):
 				var ef = eval(ctx, ef);
 				var field = Reflect.field(ef, s);
-				Reflect.callMethod(ef, field, el.map(eval.bind(ctx)));
+				try
+					Reflect.callMethod(ef, field, el.map(eval.bind(ctx)))
+				catch (err:Dynamic) {
+					throw Context.formatPos(e.pos) + ": " +err;
+				}
 			case VCall(e1, el):
 				var e1 = eval(ctx, e1);
-				Reflect.callMethod(e1, e1, el.map(eval.bind(ctx)));
+				try
+					Reflect.callMethod(e1, e1, el.map(eval.bind(ctx)))
+				catch (err:Dynamic) {
+					throw Context.formatPos(e.pos) + ": " +err;
+				}					
 		}
 	}
 }
@@ -385,7 +393,7 @@ class Context {
 		return buffer.toString();
 	}
 	
-	function formatPos(pos:hxparse.Lexer.Pos) {
+	static public function formatPos(pos:hxparse.Lexer.Pos) {
 		return '${pos.psource}:${pos.pline}';
 	}
 }
