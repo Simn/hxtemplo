@@ -189,7 +189,7 @@ class Template {
 		} catch( e : Dynamic ) {
 			throw "Cannot iter on " + v;
 		}
-		return v;		
+		return v;
 	}
 	
 	function iterate<T>(ctx:Context, s:String, v:Iterator<T>, part:Part) {
@@ -239,7 +239,7 @@ class Template {
 			case VIf(econd, ethen, null):
 				if (eval(ctx, econd)) eval(ctx, ethen) else null;
 			case VIf(econd, ethen, eelse):
-				if (eval(ctx, econd)) eval(ctx, ethen) else eval(ctx, eelse);		
+				if (eval(ctx, econd)) eval(ctx, ethen) else eval(ctx, eelse);
 			case VField(e1, s):
 				Reflect.field(eval(ctx,e1), s);
 			case VParent(e1):
@@ -283,7 +283,14 @@ class Template {
 					case OpMod: eval(ctx, e1) % eval(ctx, e1);
 					case OpCompare: throw "???";
 					case OpAssign:
-						throw "assigning is not supported";	
+						switch(e1.expr) {
+							case VField(ef, s):
+								var ef = eval(ctx, ef);
+								Reflect.setField(ef, s, eval(ctx, e2));
+								Reflect.field(ef, s);
+							case _:
+								throw "invalid assign";
+						}
 				}
 			case VObject(fl):
 				var r = { };
@@ -311,7 +318,7 @@ class Template {
 					Reflect.callMethod(e1, e1, el.map(eval.bind(ctx)))
 				catch (err:Dynamic) {
 					throw Context.formatPos(e.pos) + ": " +err;
-				}					
+				}
 		}
 	}
 }
@@ -390,7 +397,7 @@ class Context {
 	}
 	
 	public function getContent() {
-		return buffer.toString();
+		return ~/[\r\n\t]/g.replace(buffer.toString(), "");
 	}
 	
 	static public function formatPos(pos:hxparse.Lexer.Pos) {
