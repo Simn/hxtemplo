@@ -108,7 +108,7 @@ class Converter {
 						var cases2 = [];
 						if (i == -1) cases2.push(mkBlock(b.elements));
 						else cases[i] = mkBlock(b.elements);
-						b = b2;
+						var b = b2;
 						while (true) {
 							switch(b.type) {
 								case BTCase(b2,i):
