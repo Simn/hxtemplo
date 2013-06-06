@@ -101,7 +101,7 @@ class Template {
 				iterate(ctx, s, v, p);
 			case PValue(e): ctx.append(display(eval(ctx, e)));
 			case PRaw(e): ctx.append(Std.string(eval(ctx, e)));
-			case PNode(node) if (node.cond != null && eval(ctx, node.cond) == false):
+			case PNode(node) if (node.cond != null && eval(ctx, node.cond) != true):
 			case PNode(node) if (node.repeat != null):
 				var v = getIterator(eval(ctx, node.repeat.t));
 				var r = node.repeat;
