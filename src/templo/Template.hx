@@ -19,10 +19,10 @@ import templo.Token;
 		- `::attr` (within node definition)
 		- `::switch` and `::case`
 		- `::use`
+		- `::eval`
 	
 	The following directives are currently unsupported:
 	
-		- `::eval`
 		- `::compare`
 		- `~=`
 **/
