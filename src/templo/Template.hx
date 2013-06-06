@@ -91,6 +91,7 @@ class Template {
 			case PBlock(pl): pl.map(processPart.bind(ctx));
 			case PSet(s, e): ctx.bind(s, eval(ctx, e));
 			case PData(s) | PComment(s): ctx.append(s);
+			case PEval(e): eval(ctx, e);
 			case PMacroCall(s, cl): callMacro(ctx, s, cl);
 			case PIf(eif, pthen, pelse):
 				if(eval(ctx, eif)) processPart(ctx, pthen);

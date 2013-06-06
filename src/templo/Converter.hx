@@ -139,6 +139,7 @@ class Converter {
 					case _: error("Unexpected case", c.pos);
 				}
 			case CUse(e): pushBlock(BTUse(e));
+			case CEval(e): push(PEval(e));
 			case cd = (CEval(_) | CCompare | CCompareWith):
 				throw 'Not implemented yet: $cd at ${c.pos}';
 		}

@@ -16,6 +16,7 @@ enum Part {
 	PFill(s:String, body:Part);
 	PMacroCall(s:String, cl:Array<Part>);
 	PUse(e:Expr, body:Part);
+	PEval(e:Expr);
 }
 
 class Named<T> {
