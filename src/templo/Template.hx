@@ -208,7 +208,6 @@ class Template {
 			r = {};
 			ctx.bind("repeat", r);
 		}
-		Reflect.setField(r, s, repeat);
 		for ( i in v ) {
 			repeat.index++;
 			repeat.number++;
@@ -216,6 +215,7 @@ class Template {
 			repeat.odd = !repeat.even;
 			repeat.last = !v.hasNext();
 			ctx.push();
+			Reflect.setField(r, s, repeat);
 			ctx.bind(s, i);
 			processPart(ctx, part);
 			ctx.pop();
