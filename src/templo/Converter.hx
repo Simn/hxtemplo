@@ -14,28 +14,33 @@ class Converter {
 		return new Converter().content(c);
 	}
 	
+	static function error(s:String, p:hxparse.Lexer.Pos) {
+		throw p + ": " +s;
+	}
+	
 	function new() {
 		blockStack = new BlockStack();
 	}
 		
 	function content(c:Content) {
-		pushBlock(BTNormal);
+		if (c.length == 0) return PBlock([]);
+		pushBlock(BTNormal, c[0].pos);
 		for (elt in c) {
 			process(elt);
 		}
-		return mkBlock(popBlock().elements);
+		var b = popBlock();
+		if (b.type != BTNormal) {
+			error("Unclosed " +b, b.pos);
+		}
+		return mkBlock(b.elements);
 	}
-	
-	function error(s:String, p:hxparse.Lexer.Pos) {
-		throw p + ": " +s;
-	}
-	
+		
 	function push(a:Part) {
 		blockStack.first().elements.push(a);
 	}
 	
-	function pushBlock(type:BlockType) {
-		blockStack.add(new Block(type));
+	function pushBlock(type:BlockType, pos) {
+		blockStack.add(new Block(type, pos));
 	}
 	
 	function popBlock() {
@@ -70,22 +75,22 @@ class Converter {
 			case CValue(e):
 				push(PValue(e));
 			case CIf(e):
-				pushBlock(BTIf(e));
+				pushBlock(BTIf(e), c.pos);
 			case CElseIf(e):
 				switch(popBlock()) {
-					case b = { type: BTIf(_) | BTElseif(_) } : pushBlock(BTElseif(b, e));
+					case b = { type: BTIf(_) | BTElseif(_) } : pushBlock(BTElseif(b, e), c.pos);
 					case _: error("Unexpected elseif", c.pos);
 				}
 			case CElse:
 				var b = popBlock();
 				switch(b.type) {
 					case BTIf(_) | BTElseif(_):
-						pushBlock(BTElse(b));
+						pushBlock(BTElse(b), c.pos);
 					case _:
 						error("Unexpected else", c.pos);
 				}
 			case CForeach(s, e1):
-				pushBlock(BTForeach(s, e1));
+				pushBlock(BTForeach(s, e1), c.pos);
 			case CEnd:
 				function unwrap(block:Block, prev:Part) {
 					return switch(block.type) {
@@ -129,16 +134,16 @@ class Converter {
 			case CSet(s, e1):
 				push(PSet(s, e1));
 			case CFill(s):
-				pushBlock(BTFill(s));
+				pushBlock(BTFill(s), c.pos);
 			case CSwitch(e):
-				pushBlock(BTSwitch(e));
+				pushBlock(BTSwitch(e), c.pos);
 			case CCase(i):
 				var b = popBlock();
 				switch(b.type) {
-					case BTSwitch(_) | BTCase(_): pushBlock(BTCase(b, i));
+					case BTSwitch(_) | BTCase(_): pushBlock(BTCase(b, i), c.pos);
 					case _: error("Unexpected case", c.pos);
 				}
-			case CUse(e): pushBlock(BTUse(e));
+			case CUse(e): pushBlock(BTUse(e), c.pos);
 			case CEval(e): push(PEval(e));
 			case cd = (CEval(_) | CCompare | CCompareWith):
 				throw 'Not implemented yet: $cd at ${c.pos}';
@@ -181,10 +186,26 @@ enum BlockType {
 class Block {
 	public var type: BlockType;
 	public var elements: Array<Part>;
+	public var pos:hxparse.Lexer.Pos;
 	
-	public function new(type:BlockType) {
+	public function new(type:BlockType, pos) {
 		this.type = type;
 		elements = [];
+		this.pos = pos;
+	}
+	
+	public function toString() {
+		return switch(type) {
+			case BTNormal: "{}";
+			case BTIf(_): "if";
+			case BTElseif(_): "elseif";
+			case BTElse(_): "else";
+			case BTForeach(_): "foreach";
+			case BTFill(_): "fill";
+			case BTSwitch(_): "switch";
+			case BTCase(_): "case";
+			case BTUse(_): "use";
+		}
 	}
 }
 
