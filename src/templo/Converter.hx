@@ -6,6 +6,8 @@ import templo.Token;
 class Converter {
 	static public var macros:Map<String, Macro> = new Map();
 
+	static var ws = ~/[\r\n\t]+/g;
+	
 	var blockStack:BlockStack;
 	
 	static public function toAst(c:Content) {
@@ -26,7 +28,7 @@ class Converter {
 	
 	function error(s:String, p:hxparse.Lexer.Pos) {
 		throw p + ": " +s;
-	}	
+	}
 	
 	function push(a:Part) {
 		blockStack.first().elements.push(a);
@@ -46,7 +48,9 @@ class Converter {
 			case XMacroCall(s, cl): push(PMacroCall(s, cl.map(content)));
 			case XMacroDef(m): defineMacro(m);
 			case XComment(s): push(PComment(s));
-			case XData(d): push(PData(d));
+			case XData(d):
+				var d = ws.replace(d, "");
+				if (d.length > 0) push(PData(d));
 			case XCData(d): throw "niy";
 			case XConstr(c): construct(c);
 		}
@@ -56,7 +60,7 @@ class Converter {
 		return switch(el) {
 			case [e]: e;
 			case _: PBlock(el);
-		}		
+		}
 	}
 	
 	function construct(c:Construct) {
@@ -81,7 +85,7 @@ class Converter {
 						error("Unexpected else", c.pos);
 				}
 			case CForeach(s, e1):
-				pushBlock(BTForeach(s, e1));				
+				pushBlock(BTForeach(s, e1));
 			case CEnd:
 				function unwrap(block:Block, prev:Part) {
 					return switch(block.type) {

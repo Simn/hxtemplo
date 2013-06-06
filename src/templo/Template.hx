@@ -397,7 +397,7 @@ class Context {
 	}
 	
 	public function getContent() {
-		return ~/[\r\n\t]/g.replace(buffer.toString(), "");
+		return buffer.toString();
 	}
 	
 	static public function formatPos(pos:hxparse.Lexer.Pos) {
