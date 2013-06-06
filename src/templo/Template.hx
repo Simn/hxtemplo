@@ -374,18 +374,18 @@ class Context {
 	}
 	
 	public function append(s:String) {
-		if (hasNewline) {
-			buffer.add(tabs);
-			hasNewline = false;
-		}
+		//if (hasNewline) {
+			//buffer.add(tabs);
+			//hasNewline = false;
+		//}
 		buffer.add(s);
 	}
 	
 	public inline function newline() {
-		if (!hasNewline) {
-			buffer.add("\n");
-			hasNewline = true;
-		}
+		//if (!hasNewline) {
+			//buffer.add("\n");
+			//hasNewline = true;
+		//}
 	}
 	
 	public function increaseIndent() {
