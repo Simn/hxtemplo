@@ -88,7 +88,8 @@ class Template {
 	
 	function processPart(ctx:Context, e:Part) {
 		switch(e) {
-			case PBlock(pl): pl.map(processPart.bind(ctx));
+			case PBlock(pl):
+				for (p in pl) processPart(ctx, p);
 			case PSet(s, e): ctx.bind(s, eval(ctx, e));
 			case PData(s) | PComment(s): ctx.append(s);
 			case PEval(e): eval(ctx, e);
@@ -109,7 +110,6 @@ class Template {
 				iterate(ctx, r.name, v, e);
 				node.repeat = r;
 			case PNode(node):
-				ctx.newline();
 				ctx.append('<${node.node}');
 				for (attr in node.attributes) {
 					ctx.append(' ${attr.name}="');
@@ -122,13 +122,8 @@ class Template {
 					ctx.append(' ${attr.name}="$e"');
 				}
 				ctx.append(">");
-				ctx.newline();
-				ctx.increaseIndent();
 				if (node.content != null) processPart(ctx, node.content);
-				ctx.decreaseIndent();
-				ctx.newline();
 				ctx.append('</${node.node}>');
-				ctx.newline();
 			case PFill(s, body):
 				ctx.pushBuffer();
 				processPart(ctx, body);
@@ -328,19 +323,15 @@ typedef CtxStack = haxe.ds.GenericStack<haxe.ds.StringMap<Dynamic>>;
 
 class Context {
 	
-	var tabs(default, null):String;
 	var stack:CtxStack;
 	var buffer:StringBuf;
-	var hasNewline:Bool;
-	
+
 	var bufferStack:haxe.ds.GenericStack<StringBuf>;
 	
 	public function new() {
 		stack = new CtxStack();
-		tabs = "";
 		buffer = new StringBuf();
 		bufferStack = new haxe.ds.GenericStack<StringBuf>();
-		hasNewline = false;
 	}
 	
 	public inline function push() {
@@ -362,7 +353,7 @@ class Context {
 		return b;
 	}
 	
-	public function bind<T>(s:String, v:T) {
+	public inline function bind<T>(s:String, v:T) {
 		stack.first().set(s, v);
 	}
 	
@@ -370,34 +361,14 @@ class Context {
 		for (st in stack) {
 			if (st.exists(s)) return st.get(s);
 		}
-		//trace(formatPos(pos) + ": Warning: Unknown identifier " +s);
 		return null;
 	}
 	
-	public function append(s:String) {
-		//if (hasNewline) {
-			//buffer.add(tabs);
-			//hasNewline = false;
-		//}
+	public inline function append(s:String) {
 		buffer.add(s);
 	}
 	
-	public inline function newline() {
-		//if (!hasNewline) {
-			//buffer.add("\n");
-			//hasNewline = true;
-		//}
-	}
-	
-	public function increaseIndent() {
-		tabs += "\t";
-	}
-	
-	public function decreaseIndent() {
-		tabs = tabs.substr(1);
-	}
-	
-	public function getContent() {
+	public inline function getContent() {
 		return buffer.toString();
 	}
 	

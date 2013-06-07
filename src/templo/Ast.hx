@@ -5,7 +5,7 @@ import templo.Token;
 enum Part {
 	PValue(e:Expr);
 	PRaw(e:Expr);
-	PBlock(al:Array<Part>);
+	PBlock(al:List<Part>);
 	PData(s:String);
 	PNode(node:Node);
 	PComment(s:String);

@@ -23,7 +23,7 @@ class Converter {
 	}
 		
 	function content(c:Content) {
-		if (c.length == 0) return PBlock([]);
+		if (c.length == 0) return PBlock(new List());
 		pushBlock(BTNormal, c[0].pos);
 		for (elt in c) {
 			process(elt);
@@ -36,7 +36,7 @@ class Converter {
 	}
 		
 	function push(a:Part) {
-		blockStack.first().elements.push(a);
+		blockStack.first().elements.add(a);
 	}
 	
 	function pushBlock(type:BlockType, pos) {
@@ -61,11 +61,9 @@ class Converter {
 		}
 	}
 	
-	function mkBlock(el:Array<Part>) {
-		return switch(el) {
-			case [e]: e;
-			case _: PBlock(el);
-		}
+	function mkBlock(el:List<Part>) {
+		return if (el.length == 1) el.first();
+		else PBlock(el);
 	}
 	
 	function construct(c:Construct) {
@@ -185,12 +183,12 @@ enum BlockType {
 
 class Block {
 	public var type: BlockType;
-	public var elements: Array<Part>;
+	public var elements: List<Part>;
 	public var pos:hxparse.Lexer.Pos;
 	
 	public function new(type:BlockType, pos) {
 		this.type = type;
-		elements = [];
+		elements = new List();
 		this.pos = pos;
 	}
 	
