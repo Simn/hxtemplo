@@ -378,7 +378,7 @@ class Parser extends hxparse.Parser<Token> {
 				switch stream {
 					case [{tok:Comma}]:
 						var l = parseExprList();
-						l.push(e);
+						l.unshift(e);
 						l;
 					case _:
 						[e];
