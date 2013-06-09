@@ -134,8 +134,8 @@ class Lexer extends hxparse.Lexer implements hxparse.RuleBuilder {
 
 	static public var macros = @:rule [
 		"," => mk(lexer, Comma),
-		"(" => mk(lexer, ParentOpen),
-		")" => mk(lexer, ParentClose),
+		"\\(" => mk(lexer, ParentOpen),
+		"\\)" => mk(lexer, ParentClose),
 		"{" => mk(lexer, BraceOpen),
 		"}" => mk(lexer, BraceClose),
 		macroRule,
@@ -160,8 +160,8 @@ class Lexer extends hxparse.Lexer implements hxparse.RuleBuilder {
 	static public var expr = @:rule [
 		"." => mk(lexer, Dot ),
 		"," => mk(lexer, Comma ),
-		"(" => mk(lexer, ParentOpen ),
-		")" => mk(lexer, ParentClose ),
+		"\\(" => mk(lexer, ParentOpen ),
+		"\\)" => mk(lexer, ParentClose ),
 		"{" => mk(lexer, BraceOpen ),
 		"}" => mk(lexer, BraceClose ),
 		"\\[" => mk(lexer, BracketOpen ),
