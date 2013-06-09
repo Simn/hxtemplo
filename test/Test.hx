@@ -118,6 +118,46 @@ class Test extends haxe.unit.TestCase {
 		weq("12919", mkt(s, {}));
 	}
 	
+	function testPrefix() {
+		var s = '::set x = 1::::x::::++x::::x::';
+		weq("122", mkt(s, {}));
+		
+		var s = '::set x = 1::::x::::--x::::x::';
+		weq("100", mkt(s, {}));
+		
+		var s = '::set x = { v: 1 }::::x.v::::++x.v::::x.v::';
+		weq("122", mkt(s, {}));
+		
+		var s = '::set x = { v: 1 }::::x.v::::--x.v::::x.v::';
+		weq("100", mkt(s, {}));
+		
+		var s = '::set x = [1]::::x[0]::::++x[0]::::x[0]::';
+		weq("122", mkt(s, {}));
+		
+		var s = '::set x = [1]::::x[0]::::--x[0]::::x[0]::';
+		weq("100", mkt(s, {}));
+	}
+	
+	function testPostfix() {
+		var s = '::set x = 1::::x::::x++::::x::';
+		weq("112", mkt(s, {}));
+		
+		var s = '::set x = 1::::x::::x--::::x::';
+		weq("110", mkt(s, {}));
+		
+		var s = '::set x = { v: 1 }::::x.v::::x.v++::::x.v::';
+		weq("112", mkt(s, {}));
+		
+		var s = '::set x = { v: 1 }::::x.v::::x.v--::::x.v::';
+		weq("110", mkt(s, {}));
+		
+		var s = '::set x = [1]::::x[0]::::x[0]++::::x[0]::';
+		weq("112", mkt(s, {}));
+		
+		var s = '::set x = [1]::::x[0]::::x[0]--::::x[0]::';
+		weq("110", mkt(s, {}));
+	}
+	
 	function mkt(s:String, map:{}) {
 		return templo.Template.fromString(s).execute(map);
 	}

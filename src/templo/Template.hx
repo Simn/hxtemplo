@@ -241,15 +241,22 @@ class Template {
 			case VParent(e1):
 				eval(ctx, e1);
 			case VUnop(op, false, e1):
-				var e1:Dynamic = eval(ctx, e1);
 				switch(op) {
-					case Not: !e1;
-					case Neg: -e1;
-					case Increment: ++e1;
-					case Decrement: --e1;
+					case Not: !eval(ctx, e1);
+					case Neg: -eval(ctx, e1);
+					case Increment: eval(ctx, { expr: VBinop(OpAssign, e1, { expr: VBinop(OpAdd, e1, {expr:VConst(CInt(1)), pos: e1.pos}), pos: e1.pos}), pos: e1.pos });
+					case Decrement: eval(ctx, { expr: VBinop(OpAssign, e1, { expr: VBinop(OpSub, e1, {expr:VConst(CInt(1)), pos: e1.pos}), pos: e1.pos}), pos: e1.pos });
 				}
-			case VUnop(_, true, _):
-				throw "postfix unops are not supported";
+			case VUnop(op, true, e1):
+				switch(op) {
+					case Increment:
+						var v = eval(ctx, { expr: VBinop(OpAssign, e1, { expr: VBinop(OpAdd, e1, {expr:VConst(CInt(1)), pos: e1.pos}), pos: e1.pos}), pos: e1.pos });
+						v - 1;
+					case Decrement:
+						var v = eval(ctx, { expr: VBinop(OpAssign, e1, { expr: VBinop(OpSub, e1, {expr:VConst(CInt(1)), pos: e1.pos}), pos: e1.pos}), pos: e1.pos });
+						v + 1;
+					case _: throw 'Unsupported postfix unop: $op';
+				}
 			case VLiteral(e1):
 				eval(ctx, e1); // ???
 			case VBinop(op, e1, e2):
