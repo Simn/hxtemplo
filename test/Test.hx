@@ -35,14 +35,14 @@ class Test extends haxe.unit.TestCase {
 	function testElse() {
 		var s = 'abc::if myVar == 3::def::else::ghi::end::jkl';
 		weq('abcghijkl', mkt(s, {"myVar": 2}));
-		weq('abcdefjkl', mkt(s, {"myVar": 3}));		
+		weq('abcdefjkl', mkt(s, {"myVar": 3}));
 	}
 	
 	function testElseIf() {
 		var s = 'abc::if myVar == 3::def::elseif myVar == 2::ghi::else::jkl::end::mno';
 		weq('abcjklmno', mkt(s, {"myVar": 1}));
 		weq('abcghimno', mkt(s, {"myVar": 2}));
-		weq('abcdefmno', mkt(s, {"myVar": 3}));		
+		weq('abcdefmno', mkt(s, {"myVar": 3}));
 	}
 	
 	function testCond() {
@@ -105,6 +105,17 @@ class Test extends haxe.unit.TestCase {
 		var s = '<node ::attr test myValue1:: ::attr test2 myValue2::></node>';
 		weq('<node test2="9"></node>', mkt(s, { myValue2: 9 }));
 		weq('<node test="17" test2="9"></node>', mkt(s, { myValue1: 17, myValue2: 9 }));
+	}
+	
+	function testAssign() {
+		var s = '::set v=1::::v::::v = 9::::v::';
+		weq("199", mkt(s, {}));
+		
+		var s = '::set a = [1,2]::::a[0]::::a[1]::::a[0] = 9::::a[0]::::a[1]::';
+		weq("12992", mkt(s, {}));
+		
+		var s = '::set f = { a: 1, b : 2}::::f.a::::f.b::::f.b = 9::::f.a::::f.b::';
+		weq("12919", mkt(s, {}));
 	}
 	
 	function mkt(s:String, map:{}) {

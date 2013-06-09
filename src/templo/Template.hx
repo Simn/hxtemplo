@@ -284,6 +284,10 @@ class Template {
 								var ef = eval(ctx, ef);
 								Reflect.setField(ef, s, eval(ctx, e2));
 								Reflect.field(ef, s);
+							case VArray(eb, ei):
+								untyped eval(ctx, eb)[eval(ctx, ei)] = eval(ctx, e2);
+							case VIdent(s):
+								ctx.assign(s, eval(ctx, e2), e.pos);
 							case _:
 								throw "invalid assign";
 						}
@@ -355,6 +359,16 @@ class Context {
 	
 	public inline function bind<T>(s:String, v:T) {
 		stack.first().set(s, v);
+	}
+	
+	public function assign<T>(s:String, v:T, pos) {
+		for (st in stack) {
+			if (st.exists(s)) {
+				st.set(s, v);
+				return v;
+			}
+		}
+		throw '${formatPos(pos)}: Unknown identifier: $s';
 	}
 	
 	public function lookup(s:String, pos:hxparse.Lexer.Pos) {
