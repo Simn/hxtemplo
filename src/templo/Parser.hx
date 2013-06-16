@@ -49,7 +49,13 @@ class Parser extends hxparse.Parser<Token> implements hxparse.ParserBuilder {
 	function parseCData() {
 		ruleset = Lexer.cdata;
 		var e = null;
-		var acc = [while ((e = parseElement()) != null) e];
+		var acc = [];
+		while(true) {
+			switch stream {
+				case [e = parseElement()]: acc.push(e);
+				case _: break;
+			}
+		}
 		ruleset = Lexer.element;
 		return acc;
 	}

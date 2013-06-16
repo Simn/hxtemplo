@@ -56,7 +56,8 @@ class Converter {
 			case XData(d):
 				var d = ws.replace(d, "");
 				if (d.length > 0) push(PData(d));
-			case XCData(d): throw "niy";
+			case XCData(d):
+				for (elt in d) process(elt);
 			case XConstr(c): construct(c);
 		}
 	}

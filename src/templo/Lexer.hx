@@ -100,7 +100,7 @@ class Lexer extends hxparse.Lexer implements hxparse.RuleBuilder {
 	static public var cdata = @:rule [
 		macroRule,
 		dblDot,
-		"]]>" => mk(lexer, CDataEnd),
+		"\\]\\]>" => mk(lexer, CDataEnd),
 		"[:$\\]]" => mkData(lexer),
 		"[^:$\\]]+" => mkData(lexer)
 	];
