@@ -121,9 +121,13 @@ class Template {
 					if (e == null) continue;
 					ctx.append(' ${attr.name}="$e"');
 				}
-				ctx.append(">");
-				if (node.content != null) processPart(ctx, node.content);
-				ctx.append('</${node.node}>');
+				if (node.content != null) {
+					ctx.append(">");
+					processPart(ctx, node.content);
+					ctx.append('</${node.node}>');
+				} else {
+					ctx.append("/>");
+				}
 			case PFill(s, body):
 				ctx.pushBuffer();
 				processPart(ctx, body);
