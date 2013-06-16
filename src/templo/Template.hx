@@ -378,7 +378,7 @@ class Context {
 		throw '${formatPos(pos)}: Unknown identifier: $s';
 	}
 	
-	public function lookup(s:String, pos:hxparse.Lexer.Pos) {
+	public function lookup(s:String, pos:hxparse.Position) {
 		for (st in stack) {
 			if (st.exists(s)) return st.get(s);
 		}
@@ -393,7 +393,7 @@ class Context {
 		return buffer.toString();
 	}
 	
-	static public function formatPos(pos:hxparse.Lexer.Pos) {
+	static public function formatPos(pos:hxparse.Position) {
 		return '${pos.psource}:${pos.pline}';
 	}
 }

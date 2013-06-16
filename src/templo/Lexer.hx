@@ -20,10 +20,7 @@ class Lexer extends hxparse.Lexer implements hxparse.RuleBuilder {
 	static var buf = new StringBuf();
 
 	static inline function mk(l, t) {
-		return {
-			tok: t,
-			pos: l.curPos()
-		}
+		return new Token(t, l.curPos());
 	}
 
 	static inline function mkData(l:hxparse.Lexer) {
@@ -90,10 +87,7 @@ class Lexer extends hxparse.Lexer implements hxparse.RuleBuilder {
 			buf = new StringBuf();
 			buf.add("<!--");
 			var p2 = lexer.token(comment);
-			{
-				tok: Comment(buf.toString() + "-->"),
-				pos: hxparse.Lexer.posUnion(p1,p2)
-			}
+			new Token(Comment(buf.toString() + "-->"),hxparse.Position.union(p1,p2));
 		},
 		"<!DOCTYPE[^>]+>" => mk(lexer,Comment(lexer.current)),
 		"</"+attr+ ">" => mk(lexer,EndNode(lexer.current.substr(2, lexer.current.length - 3))),
@@ -191,19 +185,13 @@ class Lexer extends hxparse.Lexer implements hxparse.RuleBuilder {
 			buf = new StringBuf();
 			var p1 = lexer.curPos();
 			var p2 = lexer.token(string);
-			{
-				tok: String(buf.toString()),
-				pos: hxparse.Lexer.posUnion(p1, p2)
-			}
+			new Token(String(buf.toString()), hxparse.Position.union(p1, p2));
 		},
 		"'" => {
 			buf = new StringBuf();
 			var p1 = lexer.curPos();
 			var p2 = lexer.token(string2);
-			{
-				tok: String(buf.toString()),
-				pos: hxparse.Lexer.posUnion(p1, p2)
-			}
+			new Token(String(buf.toString()),hxparse.Position.union(p1, p2));
 		},
 		dblDot,
 		":" => mk(lexer, DoubleDot)

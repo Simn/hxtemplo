@@ -1,5 +1,5 @@
 package templo;
-import hxparse.Lexer.Pos in Pos;
+import hxparse.Position in Pos;
 
 enum TokenDef {
 	Comment(v:String);
@@ -31,9 +31,14 @@ enum TokenDef {
 	Eof;
 }
 
-typedef Token = {
-	tok: TokenDef,
-	pos: Pos
+class Token {
+	public var tok: TokenDef;
+	public var pos: Pos;
+	
+	public function new(tok,pos) {
+		this.tok = tok;
+		this.pos = pos;
+	}
 }
 
 enum Keyword {

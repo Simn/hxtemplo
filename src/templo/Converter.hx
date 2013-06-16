@@ -14,7 +14,7 @@ class Converter {
 		return new Converter().content(c);
 	}
 	
-	static function error(s:String, p:hxparse.Lexer.Pos) {
+	static function error(s:String, p:hxparse.Position) {
 		throw p + ": " +s;
 	}
 	
@@ -184,7 +184,7 @@ enum BlockType {
 class Block {
 	public var type: BlockType;
 	public var elements: List<Part>;
-	public var pos:hxparse.Lexer.Pos;
+	public var pos:hxparse.Position;
 	
 	public function new(type:BlockType, pos) {
 		this.type = type;
