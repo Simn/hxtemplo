@@ -337,9 +337,9 @@ class Template {
 	}
 }
 
-typedef CtxStack = haxe.ds.GenericStack<haxe.ds.StringMap<Dynamic>>;
+private typedef CtxStack = haxe.ds.GenericStack<haxe.ds.StringMap<Dynamic>>;
 
-class Context {
+private class Context {
 	
 	var stack:CtxStack;
 	var buffer:StringBuf;

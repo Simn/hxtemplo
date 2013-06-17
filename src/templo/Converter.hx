@@ -172,7 +172,7 @@ class Converter {
 	}
 }
 
-enum BlockType {
+private enum BlockType {
 	BTNormal;
 	BTIf(e:Expr);
 	BTElseif(b:Block, e:Expr);
@@ -184,7 +184,7 @@ enum BlockType {
 	BTUse(e:Expr);
 }
 
-class Block {
+private class Block {
 	public var type: BlockType;
 	public var elements: List<Part>;
 	public var pos:hxparse.Position;
@@ -210,4 +210,4 @@ class Block {
 	}
 }
 
-typedef BlockStack = haxe.ds.GenericStack<Block>;
+private typedef BlockStack = haxe.ds.GenericStack<Block>;
