@@ -14,8 +14,8 @@ typedef Error = {
 }
 
 class Parser extends hxparse.Parser<Lexer, Token> implements hxparse.ParserBuilder {
-	public function new(input:haxe.io.Input, sourceName:String) {
-		super(new Lexer(byte.ByteData.ofString(input.readAll().toString()), sourceName), Lexer.element);
+	public function new(input:byte.ByteData, sourceName:String) {
+		super(new Lexer(input, sourceName), Lexer.element);
 	}
 	
 	public function parse() {

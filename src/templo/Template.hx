@@ -31,6 +31,7 @@ class Template {
 	static var partMap:Map<String, Part> = new Map();
 	
 	var part:Part;
+	var byteData:byte.ByteData;
 	
 	/**
 		Creates a new Template by parsing `input`.
@@ -47,8 +48,15 @@ class Template {
 		If `input` is null, the result is unspecified.
 	**/
 	public function new(input:haxe.io.Input, ?sourceName = null) {
-		var parser = new templo.Parser(input, sourceName);
-		part = templo.Converter.toAst(parser.parse());
+		byteData = byte.ByteData.ofString(input.readAll().toString());
+		var parser = new templo.Parser(byteData, sourceName);
+		try {
+			part = templo.Converter.toAst(parser.parse());
+		} catch(e:hxparse.NoMatch<Dynamic>) {
+			throw e.pos.format(byteData) + ": Unexpected " +e.token.tok;
+		} catch(e:hxparse.Unexpected<Dynamic>) {
+			throw e.pos.format(byteData) + ": Unexpected " +e.token.tok;
+		}
 		if (sourceName != null) partMap.set(sourceName, part);
 	}
 	
@@ -75,7 +83,7 @@ class Template {
 		Each invocation of `execute` has its own context.
 	**/
 	public function execute(data:{}) {
-		var ctx = new Context();
+		var ctx = new Context(byteData);
 		ctx.push();
 		ctx.bind("null", null);
 		ctx.bind("true", true);
@@ -324,14 +332,14 @@ class Template {
 				try
 					Reflect.callMethod(ef, field, el.map(eval.bind(ctx)))
 				catch (err:Dynamic) {
-					throw Context.formatPos(e.pos) + ": " +err;
+					throw ctx.formatPos(e.pos) + ": " +err;
 				}
 			case VCall(e1, el):
 				var e1 = eval(ctx, e1);
 				try
 					Reflect.callMethod(e1, e1, el.map(eval.bind(ctx)))
 				catch (err:Dynamic) {
-					throw Context.formatPos(e.pos) + ": " +err;
+					throw ctx.formatPos(e.pos) + ": " +err;
 				}
 		}
 	}
@@ -343,11 +351,12 @@ private class Context {
 	
 	var stack:CtxStack;
 	var buffer:StringBuf;
-
+	var input:byte.ByteData;
 	var bufferStack:haxe.ds.GenericStack<StringBuf>;
 	
-	public function new() {
+	public function new(input:byte.ByteData) {
 		stack = new CtxStack();
+		this.input = input;
 		buffer = new StringBuf();
 		bufferStack = new haxe.ds.GenericStack<StringBuf>();
 	}
@@ -400,7 +409,7 @@ private class Context {
 		return buffer.toString();
 	}
 	
-	static public function formatPos(pos:hxparse.Position) {
-		return '${pos.psource}:${pos.pline}';
+	public function formatPos(pos:hxparse.Position) {
+		return pos.format(input);
 	}
 }
