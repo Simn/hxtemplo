@@ -152,7 +152,7 @@ class Lexer extends hxparse.Lexer implements hxparse.RuleBuilder {
 	];
 
 	static public var expr = @:rule [
-		"." => mk(lexer, Dot ),
+		"\\." => mk(lexer, Dot ),
 		"," => mk(lexer, Comma ),
 		"\\(" => mk(lexer, ParentOpen ),
 		"\\)" => mk(lexer, ParentClose ),
@@ -178,8 +178,8 @@ class Lexer extends hxparse.Lexer implements hxparse.RuleBuilder {
 		spaces => lexer.token(expr),
 		"0" => mkInt(lexer),
 		"[1-9][0-9]*" => mkInt(lexer),
-		"[0-9]+.[0-9]*" => mkFloat(lexer),
-		".[0-9]+" => mkFloat(lexer),
+		"[0-9]+\\.[0-9]*" => mkFloat(lexer),
+		"\\.[0-9]+" => mkFloat(lexer),
 		ident => mkIdent(lexer),
 		"\"" => {
 			buf = new StringBuf();
