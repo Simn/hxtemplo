@@ -214,11 +214,8 @@ class Template {
 			size: 0
 		};
 		ctx.push();
-		var r = ctx.lookup("repeat", null);
-		if (r == null) {
-			r = {};
-			ctx.bind("repeat", r);
-		}
+		var r = {};
+		ctx.bind("repeat", r);
 		for ( i in v ) {
 			repeat.index++;
 			repeat.number++;
