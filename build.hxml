@@ -2,22 +2,15 @@
 -cp test
 -main Test
 -lib hxparse
--dce full
+-dce no
 --each
 
--neko bin/hxtemplo.n
+#--next
+#-D dump
+#-cpp bin/cpp
+
+#--next
+#-python bin/python.py
 
 --next
--swf bin/hxtemplo.swf
-
---next
--js bin/hxtemplo.js
-
---next
--php bin/php
-
---next
--java bin/java
-
---next
--cpp bin/cpp
+--interp

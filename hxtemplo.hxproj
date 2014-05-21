@@ -23,6 +23,7 @@
   <build>
     <option directives="" />
     <option flashStrict="False" />
+    <option noInlineOnDebug="False" />
     <option mainClass="Test" />
     <option enabledebug="True" />
     <option additional="" />
@@ -37,7 +38,7 @@
   </compileTargets>
   <!-- Paths to exclude from the Project Explorer tree -->
   <hiddenPaths>
-    <!-- example: <hidden path="..." /> -->
+    <hidden path="obj" />
   </hiddenPaths>
   <!-- Executed before build -->
   <preBuildCommand>"$(CompilerPath)/haxe" build.hxml</preBuildCommand>
