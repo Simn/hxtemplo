@@ -1,0 +1,13 @@
+{
+  "name": "hxtemplo",
+  "url": "https://github.com/Simn/hxtemplo",
+  "license": "MIT",
+  "description": "Port of the templo engine to haxe.",
+  "version": "3.0.0",
+  "releasenote": "Update to Haxe 3.1.0",
+  "contributors": ["Simn"],
+  "classPath": "src",
+  "dependencies": {
+	  "hxparse": ""
+  }
+}
