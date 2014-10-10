@@ -109,26 +109,29 @@ class Converter {
 					case BTIf(_) | BTElseif(_) | BTElse(_): push(unwrap(b, null));
 					case BTUse(e): push(PUse(e, mkBlock(b.elements)));
 					case BTCase(b2,i):
-						// TODO: make this less idiotic
 						var cases = [];
-						var cases2 = [];
-						if (i == -1) cases2.push(mkBlock(b.elements));
-						else cases[i] = mkBlock(b.elements);
+						cases.push({ e: mkBlock(b.elements), i: i});
 						var b = b2;
 						while (true) {
-							switch(b.type) {
-								case BTCase(b2,i):
-									if (i == -1) cases2.push(mkBlock(b.elements));
-									else cases[i] = mkBlock(b.elements);
+							switch (b.type) {
+								case BTCase(b2, i):
+									cases.unshift({ e: mkBlock(b.elements), i: i});
 									b = b2;
 								case BTSwitch(e):
-									cases2.reverse();
-									for (c in 0...cases.length) {
-										if (cases[i] != null) cases2[i] = cases[i];
+									var cases2 = [];
+									var i = 0;
+									for (c in cases) {
+										if (c.i == -1) {
+											cases2[i++] = c.e;
+										} else {
+											cases2[c.i] = c.e;
+											i = c.i + 1;
+										}
 									}
 									push(PSwitch(e, cases2, mkBlock(b.elements)));
 									break;
-								case b: throw "assert";
+								case _:
+									throw "Something went wrong";
 							}
 						}
 				}

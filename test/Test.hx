@@ -94,6 +94,11 @@ class Test extends haxe.unit.TestCase {
 		weq("14 XP", mkt(s, {myEnum: XP(14)}));
 	}
 
+	function testSwitch2() {
+		var s = '::switch myEnum::::case 1::1::case 2::2::end::';
+		weq("1", mkt(s, {myEnum: MONEY(12) }));
+	}
+
 	function testUse() {
 		templo.Template.fromString("abc::myValue::def", "mySource");
 		var s = 'use ::use "mySource"::::end:: again.::set myValue = 9:: ::use "mySource"::::end::ok';
