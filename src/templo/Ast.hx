@@ -22,7 +22,7 @@ enum Part {
 class Named<T> {
 	public var name:String;
 	public var t:T;
-	
+
 	public function new(name, t) {
 		this.name = name;
 		this.t = t;
@@ -38,7 +38,7 @@ class Node {
 	public var attrs:Array<Named<Expr>>;
 	public var content:Null<Part>;
 	public var ignore:Bool;
-	
+
 	public function new(node, attributes, macros, cond, repeat, attrs, content, ignore) {
 		this.node = node;
 		this.attributes = attributes;
@@ -54,7 +54,7 @@ class Node {
 class Macro {
 	public var part:Part;
 	public var args:Array<Named<Bool>>;
-	
+
 	public function new(part, args) {
 		this.part = part;
 		this.args = args;

@@ -7,21 +7,21 @@ class Converter {
 	static public var macros:Map<String, Macro> = new Map();
 
 	static var ws = ~/[\r\n\t]+/g;
-	
+
 	var blockStack:BlockStack;
-	
+
 	static public function toAst(c:Content) {
 		return new Converter().content(c);
 	}
-	
+
 	static function error(s:String, p:hxparse.Position) {
 		throw p + ": " +s;
 	}
-	
+
 	function new() {
 		blockStack = new BlockStack();
 	}
-		
+
 	function content(c:Content) {
 		if (c.length == 0) return PBlock(new List());
 		pushBlock(BTNormal, c[0].pos);
@@ -34,19 +34,19 @@ class Converter {
 		}
 		return mkBlock(b.elements);
 	}
-		
+
 	function push(a:Part) {
 		blockStack.first().elements.add(a);
 	}
-	
+
 	function pushBlock(type:BlockType, pos) {
 		blockStack.add(new Block(type, pos));
 	}
-	
+
 	function popBlock() {
 		return blockStack.pop();
 	}
-	
+
 	function process(elt:Elt) {
 		switch(elt.def) {
 			case XNode(n): push(PNode(node(n)));
@@ -63,12 +63,12 @@ class Converter {
 			case XConstr(c): construct(c);
 		}
 	}
-	
+
 	function mkBlock(el:List<Part>) {
 		return if (el.length == 1) el.first();
 		else PBlock(el);
 	}
-	
+
 	function construct(c:Construct) {
 		switch(c.def) {
 			case CRaw(e):
@@ -150,7 +150,7 @@ class Converter {
 				throw 'Not implemented yet: $cd at ${c.pos}';
 		}
 	}
-	
+
 	function node(node:TNode) {
 		return new Node(
 			node.node,
@@ -162,7 +162,7 @@ class Converter {
 			node.content == null ? null : content(node.content),
 			node.ignore);
 	}
-	
+
 	function defineMacro(m:TMacro) {
 		switch [m.mode, m.content] {
 			case [MNormal, MContent(c)]:
@@ -188,13 +188,13 @@ private class Block {
 	public var type: BlockType;
 	public var elements: List<Part>;
 	public var pos:hxparse.Position;
-	
+
 	public function new(type:BlockType, pos) {
 		this.type = type;
 		elements = new List();
 		this.pos = pos;
 	}
-	
+
 	public function toString() {
 		return switch(type) {
 			case BTNormal: "{}";

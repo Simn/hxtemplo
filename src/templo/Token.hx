@@ -34,7 +34,7 @@ enum TokenDef {
 class Token {
 	public var tok: TokenDef;
 	public var pos: Pos;
-	
+
 	public function new(tok,pos) {
 		this.tok = tok;
 		this.pos = pos;

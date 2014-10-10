@@ -5,10 +5,10 @@ import templo.Token;
 
 /**
 	The templo Template class provides advanced templating support.
-	
+
 	Templo directives start with two double-dots: `::directive`. The supported
 	directives are:
-		
+
 		- `::raw`
 		- `::if`, `::elseif` and `::else`
 		- `::foreach`
@@ -20,31 +20,31 @@ import templo.Token;
 		- `::switch` and `::case`
 		- `::use`
 		- `::eval`
-	
+
 	The following directives are currently unsupported:
-	
+
 		- `::compare`
 		- `~=`
 **/
 class Template {
 
 	static var partMap:Map<String, Part> = new Map();
-	
+
 	var part:Part;
 	var byteData:byte.ByteData;
-	
+
 	/**
 		Creates a new Template by parsing `input`.
-		
+
 		If `sourceName` is provided, error messages will contain its value. It
 		is also recorded in a global lookup and can be used as argument to
 		`::use`.
-		
+
 		The parsing process is expensive, but it only has to be done once for
 		each input source. Template maintains no state other than the parsed
 		template information, so the intended usage is to create a Template
 		once and then invoke its `execute` method multiple times.
-		
+
 		If `input` is null, the result is unspecified.
 	**/
 	public function new(input:haxe.io.Input, ?sourceName = null) {
@@ -59,14 +59,14 @@ class Template {
 		}
 		if (sourceName != null) partMap.set(sourceName, part);
 	}
-	
+
 	/**
 		Convenience function for creating a new Template from a String.
 	**/
 	static public function fromString(s:String, ?sourceName = null) {
 		return new Template(new haxe.io.StringInput(s), sourceName);
 	}
-	
+
 	#if sys
 	/**
 		Convenience function for creating a new Template from a file.
@@ -76,10 +76,10 @@ class Template {
 		return new Template(sys.io.File.read(path), p.file + "." + p.ext);
 	}
 	#end
-	
+
 	/**
 		Executes `this` Template with the provided `data` as context.
-		
+
 		Each invocation of `execute` has its own context.
 	**/
 	public function execute(data:{}) {
@@ -93,7 +93,7 @@ class Template {
 		ctx.pop();
 		return ctx.getContent();
 	}
-	
+
 	function processPart(ctx:Context, e:Part) {
 		switch(e) {
 			case PBlock(pl):
@@ -168,7 +168,7 @@ class Template {
 				ctx.pop();
 		}
 	}
-	
+
 	function callMacro(ctx:Context, s:String, cl:Array<Part>) {
 		ctx.push();
 		var m = Converter.macros.get(s); // TODO: decouple
@@ -185,11 +185,11 @@ class Template {
 		processPart(ctx, m.part);
 		ctx.pop();
 	}
-	
+
 	function display(v:Dynamic) {
 		return StringTools.htmlEscape(Std.string(v));
 	}
-	
+
 	function getIterator(v:Dynamic):Iterator<Dynamic> {
 		try {
 			var x : Dynamic = v.iterator();
@@ -202,7 +202,7 @@ class Template {
 		}
 		return v;
 	}
-	
+
 	function iterate<T>(ctx:Context, s:String, v:Iterator<T>, part:Part) {
 		var repeat = {
 			index: -1,
@@ -231,7 +231,7 @@ class Template {
 		}
 		ctx.pop();
 	}
-	
+
 	function eval(ctx:Context, e:Expr):Dynamic {
 		return switch(e.expr) {
 			case VConst(c):
@@ -345,42 +345,42 @@ class Template {
 private typedef CtxStack = haxe.ds.GenericStack<haxe.ds.StringMap<Dynamic>>;
 
 private class Context {
-	
+
 	var stack:CtxStack;
 	var buffer:StringBuf;
 	var input:byte.ByteData;
 	var bufferStack:haxe.ds.GenericStack<StringBuf>;
-	
+
 	public function new(input:byte.ByteData) {
 		stack = new CtxStack();
 		this.input = input;
 		buffer = new StringBuf();
 		bufferStack = new haxe.ds.GenericStack<StringBuf>();
 	}
-	
+
 	public inline function push() {
 		stack.add(new haxe.ds.StringMap());
 	}
-	
+
 	public inline function pop() {
 		return stack.pop();
 	}
-	
+
 	public inline function pushBuffer() {
 		bufferStack.add(buffer);
 		buffer = new StringBuf();
 	}
-	
+
 	public inline function popBuffer() {
 		var b = buffer;
 		buffer = bufferStack.pop();
 		return b;
 	}
-	
+
 	public inline function bind<T>(s:String, v:T) {
 		stack.first().set(s, v);
 	}
-	
+
 	public function assign<T>(s:String, v:T, pos) {
 		for (st in stack) {
 			if (st.exists(s)) {
@@ -390,22 +390,22 @@ private class Context {
 		}
 		throw '${formatPos(pos)}: Unknown identifier: $s';
 	}
-	
+
 	public function lookup(s:String, pos:hxparse.Position) {
 		for (st in stack) {
 			if (st.exists(s)) return st.get(s);
 		}
 		return null;
 	}
-	
+
 	public inline function append(s:String) {
 		buffer.add(s);
 	}
-	
+
 	public inline function getContent() {
 		return buffer.toString();
 	}
-	
+
 	public function formatPos(pos:hxparse.Position) {
 		return pos.format(input);
 	}

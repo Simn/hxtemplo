@@ -45,7 +45,7 @@ class Lexer extends hxparse.Lexer implements hxparse.RuleBuilder {
 	}
 
 	static var keywords = @:mapping Keyword;
-	
+
 	static var ops = [
 		"+" => OpAdd,
 		"*" => OpMult,
@@ -69,14 +69,14 @@ class Lexer extends hxparse.Lexer implements hxparse.RuleBuilder {
 		"%" => OpMod,
 		"~=" => OpCompare
 	];
-	
+
 	static var unops = [
 		"++" => Increment,
 		"--" => Decrement,
 		"!" => Not,
 		"-" => Neg
 	];
-	
+
 	static public var element = @:rule [
 		"" => mk(lexer,Eof),
 		//bom => lexer.token(element),
