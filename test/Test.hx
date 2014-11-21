@@ -173,6 +173,11 @@ class Test extends haxe.unit.TestCase {
 		weq('<![CDATA[test1]]>', mkt(s, {v: 1}));
 	}
 
+	function testQuote() {
+		var s = '<button onclick="test\'a\'b"></button>';
+		weq(s, mkt(s, {}));
+	}
+
 	function mkt(s:String, map:{}) {
 		return templo.Template.fromString(s).execute(map);
 	}

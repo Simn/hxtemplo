@@ -165,7 +165,7 @@ class Parser extends hxparse.Parser<LexerTokenSource<Token>, Token> implements h
 				else {
 					var l = parseAttribValues(b);
 					l.push({
-						def: XData(Std.string(b2)),
+						def: XData(b2 ? '"' : "'"),
 						pos: p1
 					});
 					l;
@@ -445,7 +445,6 @@ class Parser extends hxparse.Parser<LexerTokenSource<Token>, Token> implements h
 			msg: msg,
 			pos: pos
 		}
-		return null;
 	}
 
 	static inline function aadd<T>(a:Array<T>, t:T) {
