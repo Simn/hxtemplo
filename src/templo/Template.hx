@@ -50,13 +50,9 @@ class Template {
 	public function new(input:haxe.io.Input, ?sourceName = null) {
 		byteData = byte.ByteData.ofString(input.readAll().toString());
 		var parser = new templo.Parser(byteData, sourceName);
-		try {
+		hxparse.Utils.catchErrors(byteData, function() {
 			part = templo.Converter.toAst(parser.parse());
-		} catch(e:hxparse.NoMatch<Dynamic>) {
-			throw e.pos.format(byteData) + ": Unexpected " +e.token.tok;
-		} catch(e:hxparse.Unexpected<Dynamic>) {
-			throw e.pos.format(byteData) + ": Unexpected " +e.token.tok;
-		}
+		});
 		if (sourceName != null) partMap.set(sourceName, part);
 	}
 

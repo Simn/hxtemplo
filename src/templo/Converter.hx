@@ -3,6 +3,20 @@ package templo;
 import templo.Ast;
 import templo.Token;
 
+class ConverterError extends hxparse.ParserError {
+
+	var message:String;
+
+	public function new(message:String, pos:hxparse.Position) {
+		super(pos);
+		this.message = message;
+	}
+
+	public override function toString() {
+		return message;
+	}
+}
+
 class Converter {
 	static public var macros:Map<String, Macro> = new Map();
 
@@ -15,7 +29,7 @@ class Converter {
 	}
 
 	static function error(s:String, p:hxparse.Position) {
-		throw p + ": " +s;
+		throw new ConverterError(s, p);
 	}
 
 	function new() {
