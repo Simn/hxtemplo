@@ -178,6 +178,11 @@ class Test extends haxe.unit.TestCase {
 		weq(s, mkt(s, {}));
 	}
 
+	function testAttrValueReplace() {
+		var s = '<img src="::baseUrl::/test"></img>';
+		weq('<img src="myBaseUrl/test"></img>', mkt(s, { baseUrl: "myBaseUrl" }));
+	}
+
 	function mkt(s:String, map:{}) {
 		return templo.Template.fromString(s).execute(map);
 	}
