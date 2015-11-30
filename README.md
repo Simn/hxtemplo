@@ -5,7 +5,7 @@ Haxe port of Nicolas' [templo template engine](https://github.com/ncannasse/temp
 
 ### Installation
 
-Install the library via [haxelib](http://lib.haxe.org/p/hxparse)
+Install the library via [haxelib](http://lib.haxe.org/p/hxtemplo)
 ``` 
 haxelib install hxtemplo 
 ```
