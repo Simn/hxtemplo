@@ -28,7 +28,7 @@ directives are:
 - `::set`
 - `::fill`
 - `::cond` (within node definition)
-- `::repeat`` (within node definition)
+- `::repeat` (within node definition)
 - `::attr` (within node definition)
 - `::switch` and `::case`
 - `::use`
