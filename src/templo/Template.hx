@@ -63,15 +63,19 @@ class Template {
 		return new Template(new haxe.io.StringInput(s), sourceName);
 	}
 
-	#if sys
 	/**
 		Convenience function for creating a new Template from a file.
 	**/
 	static public function fromFile(path:String) {
+		#if sys
 		var p = new haxe.io.Path(path);
 		return new Template(sys.io.File.read(path), p.file + "." + p.ext);
+		#else
+		var keep:haxe.CallStack;
+		var p = new haxe.io.Path(path);
+		return new Template(new haxe.io.StringInput(sys.io.File.getContent(path)), p.file + "." + p.ext);
+		#end
 	}
-	#end
 
 	/**
 		Executes `this` Template with the provided `data` as context.
