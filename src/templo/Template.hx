@@ -188,7 +188,7 @@ class Template {
 	}
 
 	function display(v:Dynamic) {
-		return StringTools.htmlEscape(Std.string(v));
+		return StringTools.htmlEscape(Std.string(v), true);
 	}
 
 	function getIterator(v:Dynamic):Iterator<Dynamic> {
