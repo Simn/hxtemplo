@@ -6,6 +6,18 @@ enum QuestItem
 	OTHER;
 }
 
+@:keep
+class View implements Dynamic {
+
+	public var name:String;
+
+	public function new() {}
+
+	public function getRandomText(){
+		return "random text " + 4;
+	}
+}
+
 class Test extends haxe.unit.TestCase {
 
 	static var whitespaceEreg = ~/[\t\n\r]*/g;
@@ -181,6 +193,16 @@ class Test extends haxe.unit.TestCase {
 	function testAttrValueReplace() {
 		var s = '<img src="::baseUrl::/test"></img>';
 		weq('<img src="myBaseUrl/test"></img>', mkt(s, { baseUrl: "myBaseUrl" }));
+	}
+
+	function testClassInstanceData() {
+		var str = "Hello ::name:: , ::getRandomText()::";
+		var tpl = templo.Template.fromString(str);
+
+		var view = new View();
+		view.name = "Joe";
+
+		assertEquals("Hello Joe , random text 4", tpl.execute(view));
 	}
 
 	function mkt(s:String, map:{}) {

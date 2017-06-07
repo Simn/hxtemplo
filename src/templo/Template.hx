@@ -84,12 +84,11 @@ class Template {
 		Each invocation of `execute` has its own context.
 	**/
 	public function execute(data:{}) {
-		var ctx = new Context(byteData);
+		var ctx = new Context(byteData, data);
 		ctx.push();
 		ctx.bind("null", null);
 		ctx.bind("true", true);
 		ctx.bind("false", false);
-		if (data != null) Lambda.iter(Reflect.fields(data), function(s) ctx.bind(s, Reflect.field(data, s)));
 		processPart(ctx, part);
 		ctx.pop();
 		return ctx.getContent();
@@ -346,14 +345,16 @@ class Template {
 private class Context {
 
 	var stack:haxe.ds.BalancedTree<String, Dynamic>;
+	var data:{};
 	var roots:haxe.ds.GenericStack<haxe.ds.BalancedTree.TreeNode<String, Dynamic>>;
 	var buffer:StringBuf;
 	var input:byte.ByteData;
 	var bufferStack:haxe.ds.GenericStack<StringBuf>;
 
-	public function new(input:byte.ByteData) {
+	public function new(input:byte.ByteData, data:{}) {
 		stack = new haxe.ds.BalancedTree();
 		roots = new haxe.ds.GenericStack();
+		this.data = data;
 		this.input = input;
 		buffer = new StringBuf();
 		bufferStack = new haxe.ds.GenericStack<StringBuf>();
@@ -393,7 +394,11 @@ private class Context {
 	}
 
 	public function lookup(s:String, pos:hxparse.Position) {
-		return stack.get(s);
+		return if (stack.exists(s)) {
+			stack.get(s);
+		} else {
+			Reflect.field(data, s);
+		}
 	}
 
 	public inline function append(s:String) {
