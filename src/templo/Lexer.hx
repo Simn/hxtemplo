@@ -19,7 +19,7 @@ class Lexer extends hxparse.Lexer implements hxparse.RuleBuilder {
 
 	static var buf = new StringBuf();
 
-	static inline function mk(l, t) {
+	static inline function mk(l:hxparse.Lexer, t) {
 		return new Token(t, l.curPos());
 	}
 
