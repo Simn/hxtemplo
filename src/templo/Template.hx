@@ -63,7 +63,7 @@ class Template {
 		return new Template(new haxe.io.StringInput(s), sourceName);
 	}
 
-#if (sys||js)
+#if (sys||nodejs)
 	/**
 		Convenience function for creating a new Template from a file.
 	**/
@@ -71,7 +71,7 @@ class Template {
 		#if sys
 		var p = new haxe.io.Path(path);
 		return new Template(sys.io.File.read(path), p.file + "." + p.ext);
-		#elseif js
+		#elseif nodejs
 		var p = new haxe.io.Path(path);
 		return new Template(new haxe.io.StringInput(sys.io.File.getContent(path)), p.file + "." + p.ext);
 		#end
