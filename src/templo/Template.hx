@@ -342,32 +342,30 @@ class Template {
 	}
 }
 
+private typedef CtxStack = haxe.ds.GenericStack<haxe.ds.StringMap<Dynamic>>;
+
 private class Context {
 
-	var stack:haxe.ds.BalancedTree<String, Dynamic>;
 	var data:{};
-	var roots:haxe.ds.GenericStack<haxe.ds.BalancedTree.TreeNode<String, Dynamic>>;
+	var stack:CtxStack;
 	var buffer:StringBuf;
 	var input:byte.ByteData;
 	var bufferStack:haxe.ds.GenericStack<StringBuf>;
 
 	public function new(input:byte.ByteData, data:{}) {
-		stack = new haxe.ds.BalancedTree();
-		roots = new haxe.ds.GenericStack();
+		stack = new CtxStack();
 		this.data = data;
 		this.input = input;
 		buffer = new StringBuf();
 		bufferStack = new haxe.ds.GenericStack<StringBuf>();
 	}
 
-	@:access(haxe.ds.BalancedTree.root)
 	public inline function push() {
-		roots.add(stack.root);
+		stack.add(new haxe.ds.StringMap());
 	}
 
-	@:access(haxe.ds.BalancedTree.root)
 	public inline function pop() {
-		stack.root = roots.pop();
+		return stack.pop();
 	}
 
 	public inline function pushBuffer() {
@@ -382,23 +380,24 @@ private class Context {
 	}
 
 	public inline function bind<T>(s:String, v:T) {
-		stack.set(s, v);
+		stack.first().set(s, v);
 	}
 
 	public function assign<T>(s:String, v:T, pos) {
-		if (stack.exists(s)) {
-			stack.set(s, v);
-			return v;
+		for (st in stack) {
+			if (st.exists(s)) {
+				st.set(s, v);
+				return v;
+			}
 		}
 		throw '${formatPos(pos)}: Unknown identifier: $s';
 	}
 
 	public function lookup(s:String, pos:hxparse.Position) {
-		return if (stack.exists(s)) {
-			stack.get(s);
-		} else {
-			Reflect.field(data, s);
+		for (st in stack) {
+			if (st.exists(s)) return st.get(s);
 		}
+		return Reflect.field(data, s);
 	}
 
 	public inline function append(s:String) {
