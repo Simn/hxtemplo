@@ -8,6 +8,6 @@
   "contributors": ["Simn"],
   "classPath": "src",
   "dependencies": {
-	  "hxparse": ""
+	  "hxparse": "git:https://github.com/Simn/hxparse#876070ec62a4869de60081f87763e23457a3bda8"
   }
 }
