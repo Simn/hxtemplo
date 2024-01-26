@@ -28,6 +28,8 @@ import templo.Token;
 **/
 class Template {
 
+	public static var BASE_DIR = "";
+	
 	static var partMap:Map<String, Part> = new Map();
 
 	var part:Part;
@@ -68,6 +70,7 @@ class Template {
 		Convenience function for creating a new Template from a file.
 	**/
 	static public function fromFile(path:String) {
+		path = BASE_DIR + path;
 		#if sys
 		var p = new haxe.io.Path(path);
 		return new Template(sys.io.File.read(path), p.file + "." + p.ext);
@@ -157,7 +160,7 @@ class Template {
 			case PUse(e, body):
 				var v = eval(ctx, e);
 				#if sys
-				if (!partMap.exists(v) && sys.FileSystem.exists(v)) Template.fromFile(v);
+				if (!partMap.exists(v) && sys.FileSystem.exists(BASE_DIR+v)) Template.fromFile(v);
 				#end
 				if (!partMap.exists(v)) throw "Could not find template " + v;
 				ctx.push();
